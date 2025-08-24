@@ -5,3 +5,6 @@ build:
 
 run:
 	./bin/Soulja
+
+client:
+	./bin/SouljaClient

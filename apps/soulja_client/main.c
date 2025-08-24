@@ -12,23 +12,18 @@ int main(int arc, char* argv[]) {
         return -1;
     }
 
-    window = SDL_CreateWindow("Soulja", 800, 600, 0);
+    window = SDL_CreateWindow("Soulja", 800, 600, SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
     if (window == NULL) {
         SDL_Log("SDL_CreateWindow: %s", SDL_GetError());
         return -2;
     }
 
-    renderer = SDL_CreateRenderer(window, NULL);
-
-    if (renderer == NULL) {
-        SDL_Log("SDL_CreateRenderer: %s", SDL_GetError());
-        return -3;
-    }
-
-    SDL_Log("SDL3 Initialised");
+    SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+    SDL_GL_SetSwapInterval(1);
 
     SDL_Event event;
     int quit = 0;
+    glViewport(0, 0, 800, 600);
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -39,19 +34,19 @@ int main(int arc, char* argv[]) {
                 case SDL_EVENT_KEY_DOWN:
                     SDL_Log("KEYBOARD: %s", SDL_GetScancodeName(event.key.scancode));
                     break;
+                case SDL_EVENT_WINDOW_RESIZED:
+                    glViewport(0, 0, event.window.data1, event.window.data2);
+                    break;
             }
         }
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0xff, 0xff);
-        SDL_RenderClear(renderer);
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(1);
+        glClearColor(0, 255, 255, 0.8);
+        glClear(GL_COLOR_BUFFER_BIT);
+        SDL_GL_SwapWindow(window);
     }
 
     SDL_Log("SDL3 shut down.");
 
-    SDL_DestroyRenderer(renderer);
+    SDL_GL_DestroyContext(glcontext);
     SDL_DestroyWindow(window);
 
     SDL_Quit();
