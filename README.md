@@ -2,7 +2,7 @@ A game, unnamed, for now:
 
 # Soulja
 
-## First install opengl dependencies
+## First install SDL dependencies
 
 Ubuntu/Linux Mint
 
