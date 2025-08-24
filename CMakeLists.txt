@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(Soulja C)
 
+find_package(OpenGL REQUIRED)
 
 add_subdirectory(thirdpartypoopers/libhv)
 add_subdirectory(thirdpartypoopers/libsdl-org)
@@ -26,4 +27,4 @@ set_target_properties(SouljaClient PROPERTIES
 )
 
 target_link_libraries(Soulja PRIVATE SouljaLib hv)
-target_link_libraries(SouljaClient PRIVATE SDL3::SDL3)
+target_link_libraries(SouljaClient PRIVATE SDL3::SDL3 OpenGL::GL)
