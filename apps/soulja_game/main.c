@@ -1,4 +1,5 @@
 #include <soulja_lib/game_state.h>
+#include <hv/hloop.h>
 #include <stdio.h>
 
 int main() {

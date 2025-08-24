@@ -1,0 +1,3 @@
+[submodule "thirdpartypoopers/libhv"]
+	path = thirdpartypoopers/libhv
+	url = https://github.com/ithewei/libhv.git
