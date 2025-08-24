@@ -36,6 +36,9 @@ int main(int arc, char* argv[]) {
                     SDL_Log("SDL3 event quit");
                     quit = 1;
                     break;
+                case SDL_EVENT_KEY_DOWN:
+                    SDL_Log("KEYBOARD: %s", SDL_GetScancodeName(event.key.scancode));
+                    break;
             }
         }
 
