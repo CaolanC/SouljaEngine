@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSouljaLib.a CMakeFiles/SouljaLib.dir/src/game_state.c.o CMakeFiles/SouljaLib.dir/src/grid.c.o CMakeFiles/SouljaLib.dir/src/map.c.o
+/usr/bin/ranlib libSouljaLib.a

@@ -9,5 +9,6 @@ typedef struct Grid {
 } Grid;
 
 void init_grid(Grid* grid);
+Grid make_grid();
 
 #endif

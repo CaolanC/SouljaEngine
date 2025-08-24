@@ -3,9 +3,6 @@
 
 typedef enum Obstacle {
     NONE,
-    STONE,
-    GRASS,
-    WATER
 } Obstacle;
 
 #endif

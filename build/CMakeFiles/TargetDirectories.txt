@@ -1,0 +1,4 @@
+/home/cochrac2/projects/soulja_engine/build/CMakeFiles/SouljaLib.dir
+/home/cochrac2/projects/soulja_engine/build/CMakeFiles/Soulja.dir
+/home/cochrac2/projects/soulja_engine/build/CMakeFiles/edit_cache.dir
+/home/cochrac2/projects/soulja_engine/build/CMakeFiles/rebuild_cache.dir
