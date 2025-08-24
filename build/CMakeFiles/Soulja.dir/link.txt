@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/Soulja.dir/apps/soulja_game/main.c.o -o /home/cochrac2/projects/soulja_engine/bin/Soulja  libSouljaLib.a 
