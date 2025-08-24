@@ -3,6 +3,7 @@ project(Soulja C)
 
 
 add_subdirectory(thirdpartypoopers/libhv)
+add_subdirectory(thirdpartypoopers/libsdl-org)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
 
@@ -25,3 +26,4 @@ set_target_properties(SouljaClient PROPERTIES
 )
 
 target_link_libraries(Soulja PRIVATE SouljaLib hv)
+target_link_libraries(SouljaClient PRIVATE SDL3::SDL3)
