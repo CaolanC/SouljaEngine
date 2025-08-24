@@ -8,13 +8,19 @@ file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
 
 add_library(SouljaLib ${SRC_FILES})
 
-target_include_directories(SouljaLib PRIVATE internal)
+add_executable(Soulja apps/soulja_server/main.c)
+add_executable(SouljaClient apps/soulja_client/main.c)
 
-add_executable(Soulja apps/soulja_game/main.c)
+target_include_directories(SouljaLib PRIVATE internal)
 
 target_include_directories(Soulja PRIVATE internal)
 
+
+
 set_target_properties(Soulja PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
+set_target_properties(SouljaClient PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 
