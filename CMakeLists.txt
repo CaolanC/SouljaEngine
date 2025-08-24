@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.28.3)
 project(Soulja C)
 
+set(SDL_VIDEO            ON  CACHE BOOL "" FORCE)
+set(SDL_VIDEO_X11        ON  CACHE BOOL "" FORCE)
+set(SDL_VIDEO_WAYLAND    ON  CACHE BOOL "" FORCE)
+set(SDL_VIDEO_OPENGL     ON  CACHE BOOL "" FORCE)
+set(SDL_VIDEO_OPENGL_GLX ON  CACHE BOOL "" FORCE)
+set(SDL_VIDEO_OPENGL_EGL ON  CACHE BOOL "" FORCE)
+
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(thirdpartypoopers/libhv)
