@@ -118,6 +118,5 @@ int main(int arc, char* argv[]) {
     SDL_DestroyWindow(window);
 
     SDL_Quit();
-
     return 0;
 }
