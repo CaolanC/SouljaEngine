@@ -12,6 +12,7 @@ find_package(OpenGL REQUIRED)
 
 add_subdirectory(thirdpartypoopers/libhv)
 add_subdirectory(thirdpartypoopers/libsdl-org)
+add_subdirectory(thirdpartypoopers/cglm)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
 

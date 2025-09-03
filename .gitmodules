@@ -4,3 +4,6 @@
 [submodule "thirdpartypoopers/libsdl-org"]
 	path = thirdpartypoopers/libsdl-org
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "thirdpartypoopers/cglm"]
+	path = thirdpartypoopers/cglm
+	url = https://github.com/recp/cglm.git
