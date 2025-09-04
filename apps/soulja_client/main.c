@@ -6,9 +6,10 @@
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "uniform mat4 uProjection;\n"
+    "uniform mat4 uModel;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = uProjection * vec4(aPos, 1.0);\n"
+    "   gl_Position = uProjection * uModel * vec4(aPos, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
@@ -18,14 +19,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
     "}\0";
 
-int train2();
-
-int main(int arc, char* argv[]) {
-    train2();
-    return 0;
-}
-
-int train2() {
+int main() {
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -48,9 +42,9 @@ int train2() {
     SDL_GL_SetSwapInterval(1);
 
     float vertices[] = {
-        -0.5f, -0.5f, -14.0f,
-         0.5f, -0.5f, -14.0f,
-        -0.5f,  0.5f, -14.0f,
+        -0.5f, -0.5f, -1.0f,
+         0.5f, -0.5f, -1.0f,
+        -0.5f,  0.5f, -1.0f,
     };
 
     unsigned int theVAO, posVBO;
@@ -95,6 +89,14 @@ int train2() {
     unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
     if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection_matrix);
+
+    mat4 model_matrix;
+    glm_mat4_identity(model_matrix);
+    glm_translate(model_matrix, (vec3){0.0f, 0.0f, -18.0f});
+
+    unsigned int uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
+    if (uModelLoc == -1) SDL_Log("WARN: uModel not found");
+    glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, (const float*) model_matrix);
     
 
 
