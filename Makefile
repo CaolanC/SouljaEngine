@@ -9,13 +9,19 @@ bclient:
 	make -C build SouljaClient
 
 bserver:
-	make -C build Soulja
+	make -C build Soulja/
+
+bclientf:
+	make -C build SouljaClient/fast
+
+bserverf:
+	make -C build Soulja/fast
 
 # build and run client
-brc: bclient rclient
+brc: bclientf rclient
 
 # build and run server
-brs: bserver rserver
+brs: bserverf rserver
 
 rclient:
 	./bin/SouljaClient

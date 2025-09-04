@@ -1,20 +1,24 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <GL/gl.h>
+#include <cglm/cglm.h>
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 uProjection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = uProjection * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
     "}\0";
+
+int train2();
 
 int main(int arc, char* argv[]) {
     train2();
@@ -31,12 +35,13 @@ int train2() {
     SDL_Window* window = SDL_CreateWindow("Train", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glcontext = SDL_GL_CreateContext(window);
     
+    glViewport(0, 0, 800, 800);
     SDL_GL_SetSwapInterval(1);
 
     float vertices[] = {
-        -1.0f, -1.0f, -15.0f,
-         1.0f,  1.0f, -15.0f,
-         0.0f,  0.0f, -15.0f,
+        -1.0f, -1.0f, 1.0f,
+         1.0f,  1.0f, 1.0f,
+         0.0f,  0.0f, 1.0f,
     };
 
     unsigned int theVAO, posVBO;
@@ -46,7 +51,7 @@ int train2() {
 
     glGenBuffers(1, &posVBO);
     glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, NULL);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
@@ -62,17 +67,24 @@ int train2() {
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
+    mat4 projection_matrix;
+    glm_perspective(glm_rad(60.0f), (float) 800 / (float) 800, 0.1f, 100.0f, projection_matrix);
+
+    unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
+    glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection_matrix);
+    
+    glUseProgram(shaderProgram);
+
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    glUseProgram(shaderProgram);
 
     SDL_Event event;
     int quit = 0;
     while (!quit) {
 
-        glClearColor(0, 255, 255, 0.8);
+        glClearColor(0.0f, 1.0f, 1.0f, 0.8f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         while (SDL_PollEvent(&event)) {

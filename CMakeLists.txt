@@ -13,6 +13,7 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(thirdpartypoopers/libhv)
 add_subdirectory(thirdpartypoopers/libsdl-org)
 add_subdirectory(thirdpartypoopers/cglm)
+add_subdirectory(thirdpartypoopers/glad)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
 
@@ -35,4 +36,4 @@ set_target_properties(SouljaClient PROPERTIES
 )
 
 target_link_libraries(Soulja PRIVATE SouljaLib hv)
-target_link_libraries(SouljaClient PRIVATE SDL3::SDL3 OpenGL::GL)
+target_link_libraries(SouljaClient PRIVATE SDL3::SDL3 OpenGL::GL cglm m glad)
