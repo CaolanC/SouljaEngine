@@ -2,14 +2,13 @@
 #include <SDL3/SDL_main.h>
 #include <glad/glad.h>
 #include <cglm/cglm.h>
-#include <GL/gl.h>
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "uniform mat4 uProjection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = uProjection * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = uProjection * vec4(aPos, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
@@ -35,19 +34,23 @@ int train2() {
 
     SDL_Window* window = SDL_CreateWindow("Train", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+    SDL_GL_MakeCurrent(window, glcontext); 
 
     if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
         SDL_Log("Failed to initialize GLAD");
         return -1;
     }
+
+    int w, h;
+    SDL_GetWindowSizeInPixels(window, &w, &h);
+    glViewport(0, 0, w, h);
     
-    glViewport(0, 0, 800, 800);
     SDL_GL_SetSwapInterval(1);
 
     float vertices[] = {
-        -1.0f, -1.0f, 1.0f,
-         1.0f,  1.0f, 1.0f,
-         0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -14.0f,
+         0.5f, -0.5f, -14.0f,
+        -0.5f,  0.5f, -14.0f,
     };
 
     unsigned int theVAO, posVBO;
@@ -57,7 +60,7 @@ int train2() {
 
     glGenBuffers(1, &posVBO);
     glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
@@ -73,13 +76,26 @@ int train2() {
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
+    GLint ok; char log[1024];
+
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &ok);
+    if(!ok){ glGetShaderInfoLog(vertexShader, sizeof log, NULL, log); SDL_Log("VS: %s", log); }
+
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &ok);
+    if(!ok){ glGetShaderInfoLog(fragmentShader, sizeof log, NULL, log); SDL_Log("FS: %s", log); }
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &ok);
+    if(!ok){ glGetProgramInfoLog(shaderProgram, sizeof log, NULL, log); SDL_Log("LINK: %s", log); }
+
     mat4 projection_matrix;
     glm_perspective(glm_rad(60.0f), (float) 800 / (float) 800, 0.1f, 100.0f, projection_matrix);
 
+    glUseProgram(shaderProgram);
+
     unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
+    if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection_matrix);
     
-    glUseProgram(shaderProgram);
 
 
     glDeleteShader(vertexShader);
@@ -102,9 +118,12 @@ int train2() {
                 case SDL_EVENT_KEY_DOWN:
                     SDL_Log("KEYBOARD: %s", SDL_GetScancodeName(event.key.scancode));
                     break;
-                case SDL_EVENT_WINDOW_RESIZED:
-                    glViewport(0, 0, event.window.data1, event.window.data2);
+                case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
+                    int w, h;
+                    SDL_GetWindowSizeInPixels(window, &w, &h);
+                    glViewport(0, 0, w, h);
                     break;
+                }
             }
         }
         glUseProgram(shaderProgram);

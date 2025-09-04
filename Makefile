@@ -18,10 +18,17 @@ bserverf:
 	make -C build Soulja/fast
 
 # build and run client
-brc: bclientf rclient
+brc: bclient rclient
 
 # build and run server
-brs: bserverf rserver
+brs: bserver rserver
+
+
+# build fast and run client
+brcf: bclientf rclient
+
+# build fast and run server
+brsf: bserverf rserver
 
 rclient:
 	./bin/SouljaClient
