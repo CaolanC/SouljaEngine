@@ -1,7 +1,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <GL/gl.h>
+#include <glad/glad.h>
 #include <cglm/cglm.h>
+#include <GL/gl.h>
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -34,6 +35,11 @@ int train2() {
 
     SDL_Window* window = SDL_CreateWindow("Train", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+
+    if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
+        SDL_Log("Failed to initialize GLAD");
+        return -1;
+    }
     
     glViewport(0, 0, 800, 800);
     SDL_GL_SetSwapInterval(1);
