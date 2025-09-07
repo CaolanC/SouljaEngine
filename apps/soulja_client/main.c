@@ -237,23 +237,12 @@ int main() {
         
 
 
-        mat4 new_view, rot, trans; glm_mat4_identity(new_view); glm_mat4_identity(rot);
         const bool* k_state = SDL_GetKeyboardState(NULL);
-        //if (k_state[SDL_SCANCODE_RIGHT]) y_rot -= mouse_y;
-        //if (k_state[SDL_SCANCODE_LEFT]) y_rot += mouse_y;
         if (k_state[SDL_SCANCODE_W]) z -= camera.speed;
         if (k_state[SDL_SCANCODE_S]) z += camera.speed;
         if (k_state[SDL_SCANCODE_A]) x -= camera.speed;
         if (k_state[SDL_SCANCODE_D]) x += camera.speed;
 
-        mouse_x += mouse_x_delta;
-        glm_rotate_y(rot, glm_rad(mouse_x), rot);
-        glm_translate_make(trans, (vec3){-x, 0.0f, -z});
-        glm_mat4_mul(rot, trans, new_view);
-
-        //mat4 view; glm_mat4_identity(view);
-        //glm_lookat((vec3) {y, 0.0f, -x}, (vec3) {ver, 0.0f, -18.0f}, (vec3) {0.0f, 1.0f, 0.0f}, view);
-        //glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
         update_camera_orientation_y(&camera, uViewLoc, mouse_x_delta, mouse_y_delta);
 
         mat4 modelA; glm_mat4_identity(modelA);
@@ -265,6 +254,7 @@ int main() {
         mat4 modelB; glm_mat4_identity(modelB);
         glm_translate(modelB, (vec3){0.0f, 0.0f, 3.0f});
         
+        // rotate the triangle
         vec3 axis = {0.0f, 1.0f, 0.0f};
 
         if (triangle_rotation > 2 * M_PI) {
@@ -272,7 +262,6 @@ int main() {
         }
 
         triangle_rotation += 0.01f;
-        printf("%f\n", triangle_rotation);
 
         float angle = triangle_rotation;
         versor quat1;
