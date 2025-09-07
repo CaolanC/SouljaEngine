@@ -29,11 +29,47 @@ typedef struct {
     Mesh* mesh;
 } GameObject;
 
+
 typedef struct {
     vec3 position;
     versor orientation;
+    vec3 y_axis;
+    vec3 x_axis;
     uint speed;
+    float y_rotation;
 } Camera;
+
+void update_camera_orientation_y(Camera* camera, int uViewLoc, const float mouse_movement_x, const float mouse_movement_y) {
+
+    const float sensitivity = 0.002f;
+    float y_rotation_delta = -mouse_movement_x * sensitivity;
+    float x_rotation_delta = -mouse_movement_y * sensitivity;
+
+    versor yaw;
+    glm_quatv(yaw, y_rotation_delta, camera->y_axis);
+    versor pitch;
+    glm_quatv(pitch, x_rotation_delta, camera->x_axis);
+    
+    versor tmp;
+    glm_quat_mul(yaw, camera->orientation, tmp);
+    glm_quat_mul(tmp, pitch, camera->orientation);
+    glm_quat_normalize(camera->orientation);
+
+    versor quat_conj;
+    glm_quat_conjugate(camera->orientation, quat_conj);
+
+    mat4 rotation;
+    glm_quat_mat4(quat_conj, rotation);
+
+    mat4 trans;
+    glm_translate_make(trans, (vec3){-camera->position[0], -camera->position[1], -camera->position[2]});
+    
+    mat4 new_view;
+    glm_mat4_mul(rotation, trans, new_view);
+
+    glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
+
+}
 
 GameObject go_makeTriangle(vec3 position_xyz) {
     GameObject triangle;
@@ -48,7 +84,17 @@ Camera make_camera(float x, float y, float z, float speed) {
     camera.position[1] = y;
     camera.position[2] = z;
     camera.speed = speed;
-    glm_quat_identity(camera.orientation);
+    camera.orientation[0] = 0;
+    camera.orientation[1] = 1;
+    camera.orientation[2] = 0;
+    camera.y_rotation = 0.0f; // Has the range of 0 to 2 PI then we come back to 0;
+    camera.y_axis[0] = 0;
+    camera.y_axis[1] = 1;
+    camera.y_axis[2] = 0;
+    camera.x_axis[0] = 1;
+    camera.x_axis[1] = 0;
+    camera.x_axis[2] = 0;
+
     return camera;
 };
 
@@ -207,7 +253,8 @@ int main() {
 
         //mat4 view; glm_mat4_identity(view);
         //glm_lookat((vec3) {y, 0.0f, -x}, (vec3) {ver, 0.0f, -18.0f}, (vec3) {0.0f, 1.0f, 0.0f}, view);
-        glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
+        //glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
+        update_camera_orientation_y(&camera, uViewLoc, mouse_x_delta, mouse_y_delta);
 
         mat4 modelA; glm_mat4_identity(modelA);
         glm_translate(modelA, (vec3){0.0f, 0.0f, -4.0f});
@@ -250,3 +297,4 @@ int main() {
     SDL_Quit();
     return 0;
 }
+
