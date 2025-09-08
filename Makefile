@@ -1,3 +1,7 @@
+ROOT = $(realpath $(shell dirname $(firstword $(MAKEFILE_LIST))))
+
+CLIENT_ARGS = --assets_folder ${ROOT}/assets
+
 bootstrap:
 	git submodule update --init
 	cd build && cmake ../ && make
@@ -32,7 +36,7 @@ brcf: bclientf rclient
 brsf: bserverf rserver
 
 rclient:
-	./bin/SouljaClient
+	./bin/SouljaClient ${CLIENT_ARGS}
 
 rserver:
 	./bin/Soulja
@@ -41,4 +45,4 @@ run:
 	./bin/Soulja
 
 client:
-	./bin/SouljaClient
+	./bin/SouljaClient ${CLIENT_ARGS}

@@ -14,6 +14,7 @@ add_subdirectory(thirdpartypoopers/libhv)
 add_subdirectory(thirdpartypoopers/libsdl-org)
 add_subdirectory(thirdpartypoopers/cglm)
 add_subdirectory(thirdpartypoopers/glad)
+add_subdirectory(thirdpartypoopers/FastNoiseLite)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
@@ -40,4 +41,4 @@ set_target_properties(SouljaClient PROPERTIES
 )
 
 target_link_libraries(Soulja PRIVATE SouljaLib hv)
-target_link_libraries(SouljaClient PRIVATE SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad)
+target_link_libraries(SouljaClient PRIVATE SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)

@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <cglm/cglm.h>
 #include <soulja_client_lib/shader_helpers.h>
+#include <soulja_client_lib/config.h>
+#include <FastNoiseLite.h>
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -139,7 +141,10 @@ Camera make_camera(float x, float y, float z, float speed) {
     return camera;
 };
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    load_config(argc, argv);
+
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -180,6 +185,7 @@ int main() {
     glEnableVertexAttribArray(0);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    get_shader_source("./shaders/triangle_shader.glsl");
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
