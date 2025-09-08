@@ -1,4 +1,5 @@
 bootstrap:
+	git submodule update --init
 	cd build && cmake ../ && make
 
 .PHONY: build 
