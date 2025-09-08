@@ -9,4 +9,4 @@
 	url = https://github.com/recp/cglm.git
 [submodule "thirdpartypoopers/FastNoiseLite"]
 	path = thirdpartypoopers/FastNoiseLite
-	url = https://github.com/Auburn/FastNoiseLite.git
+	url = git@github.com:CaolanC/FastNoiseLite.git
