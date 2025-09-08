@@ -39,21 +39,55 @@ typedef struct {
     float y_rotation;
 } Camera;
 
-void update_camera_orientation_y(Camera* camera, int uViewLoc, const float mouse_movement_x, const float mouse_movement_y) {
+typedef struct {
+    float x_delta;
+    float y_delta;
+} MouseState;
+
+MouseState make_mouse_state() {
+    MouseState mouse_state = {0};
+    return mouse_state;
+}
+
+void update_mouse_state(MouseState* mouse_state, float x, float y) {
+    mouse_state->x_delta = x;
+    mouse_state->y_delta = y;
+}
+
+void make_view_from_camera(Camera* camera, mat4 view) {
+}
+
+void update_camera_orientation_y(Camera* camera, int uViewLoc, MouseState mouse_state, const bool* k_state) {
 
     const float sensitivity = 0.002f;
-    float y_rotation_delta = -mouse_movement_x * sensitivity;
-    float x_rotation_delta = -mouse_movement_y * sensitivity;
+    float yaw = -mouse_state.x_delta * sensitivity;
+    float pitch = -mouse_state.y_delta * sensitivity;
 
-    versor yaw;
-    glm_quatv(yaw, y_rotation_delta, camera->y_axis);
-    versor pitch;
-    glm_quatv(pitch, x_rotation_delta, camera->x_axis);
+    versor qYaw;
+    glm_quatv(qYaw, yaw, (vec3) {0, 1, 0});
+    versor qPitch;
+    glm_quatv(qPitch, pitch, (vec3) {1, 0, 0});
     
     versor tmp;
-    glm_quat_mul(yaw, camera->orientation, tmp);
-    glm_quat_mul(tmp, pitch, camera->orientation);
+    glm_quat_mul(qYaw, camera->orientation, tmp);
+    glm_quat_mul(tmp, qPitch, camera->orientation);
     glm_quat_normalize(camera->orientation);
+
+    vec3 fwd   = { 0.0f, 0.0f,-1.0f };
+    vec3 right = { 1.0f, 0.0f, 0.0f };
+    vec3 up    = { 0.0f, 1.0f, 0.0f };
+
+    glm_quat_rotatev(camera->orientation, fwd, fwd);
+    glm_quat_rotatev(camera->orientation, right, right);
+    glm_quat_rotatev(camera->orientation, up, up);
+
+    float move_speed = 0.1f;
+
+    if (k_state[SDL_SCANCODE_W]) glm_vec3_muladds(fwd, move_speed, camera->position);
+    if (k_state[SDL_SCANCODE_S]) glm_vec3_muladds(fwd, -move_speed, camera->position);
+
+    if (k_state[SDL_SCANCODE_D]) glm_vec3_muladds(right, move_speed, camera->position);
+    if (k_state[SDL_SCANCODE_A]) glm_vec3_muladds(right, -move_speed, camera->position);
 
     versor quat_conj;
     glm_quat_conjugate(camera->orientation, quat_conj);
@@ -68,7 +102,15 @@ void update_camera_orientation_y(Camera* camera, int uViewLoc, const float mouse
     glm_mat4_mul(rotation, trans, new_view);
 
     glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
+}
 
+void update_camera_movement(Camera* camera, bool* k_state) {
+    if (k_state[SDL_SCANCODE_W]) {
+    };
+}
+
+void update_camera_position(Camera* camera, int uViewLoc) {
+    
 }
 
 GameObject go_makeTriangle(vec3 position_xyz) {
@@ -84,9 +126,7 @@ Camera make_camera(float x, float y, float z, float speed) {
     camera.position[1] = y;
     camera.position[2] = z;
     camera.speed = speed;
-    camera.orientation[0] = 0;
-    camera.orientation[1] = 1;
-    camera.orientation[2] = 0;
+    glm_quat_identity(camera.orientation);
     camera.y_rotation = 0.0f; // Has the range of 0 to 2 PI then we come back to 0;
     camera.y_axis[0] = 0;
     camera.y_axis[1] = 1;
@@ -204,30 +244,45 @@ int main() {
     float triangle_rotation = 0.0f;
     float camera_rotation_y = 0.0f;
 
+    float relX = 0.0f;
+    float relY = 0.0f;
     vec3 forward = {0.0f, 0.0f, -1.0f};
     Camera camera = make_camera(0.0f, 0.0f, 0.0f, 1.0f);
+    MouseState mouse_state = make_mouse_state();
     while (!quit) {
+
 
         glClearColor(0.0f, 1.0f, 1.0f, 0.8f);
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
         glBindVertexArray(theVAO);
 
+
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-                case SDL_EVENT_QUIT:
+                case SDL_EVENT_QUIT: {
                     SDL_Log("SDL3 event quit");
                     quit = 1;
                     break;
+                }
                 case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED: {
                     int w, h;
                     SDL_GetWindowSizeInPixels(window, &w, &h);
                     glViewport(0, 0, w, h);
                     break;
                 }
+                case SDL_EVENT_MOUSE_MOTION: {
+                    relX += event.motion.xrel;
+                    relY += event.motion.yrel;
+                    break;
+                }
             }
         }
-        SDL_GetRelativeMouseState(&mouse_x_delta, &mouse_y_delta);
+
+        update_mouse_state(&mouse_state, relX, relY);
+
+        relX = 0.0f;
+        relY = 0.0f;
 
         vec3 camera_axis = {0.0f, 1.0f, 0.0f};
         versor quat;
@@ -238,12 +293,8 @@ int main() {
 
 
         const bool* k_state = SDL_GetKeyboardState(NULL);
-        if (k_state[SDL_SCANCODE_W]) z -= camera.speed;
-        if (k_state[SDL_SCANCODE_S]) z += camera.speed;
-        if (k_state[SDL_SCANCODE_A]) x -= camera.speed;
-        if (k_state[SDL_SCANCODE_D]) x += camera.speed;
 
-        update_camera_orientation_y(&camera, uViewLoc, mouse_x_delta, mouse_y_delta);
+        update_camera_orientation_y(&camera, uViewLoc, mouse_state, k_state);
 
         mat4 modelA; glm_mat4_identity(modelA);
         glm_translate(modelA, (vec3){0.0f, 0.0f, -4.0f});
