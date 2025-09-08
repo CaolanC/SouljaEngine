@@ -3,15 +3,18 @@ ROOT = $(realpath $(shell dirname $(firstword $(MAKEFILE_LIST))))
 CLIENT_ARGS = --assets_folder ${ROOT}/assets
 
 bootstrap:
+	git submodule update --init
+	cd build && cmake ../ && make
+
+bootstrap_ubuntu_mint: linux_mint_sdl_dep bootstrap
+
+linux_mint_sdl_dep:
 	sudo apt-get install build-essential git make \
 	pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
 	libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
 	libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
 	libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
 	libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
-	git submodule update --init
-	cd build && cmake ../ && make
-
 .PHONY: build 
 build:
 	make -C build all
