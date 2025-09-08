@@ -1,6 +1,6 @@
 [submodule "thirdpartypoopers/libhv"]
 	path = thirdpartypoopers/libhv
-	url = https://github.com/ithewei/libhv.git
+	url = git@github.com:CaolanC/libhv.git
 [submodule "thirdpartypoopers/libsdl-org"]
 	path = thirdpartypoopers/libsdl-org
 	url = https://github.com/libsdl-org/SDL.git
