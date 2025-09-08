@@ -2,6 +2,7 @@
 #include <SDL3/SDL_main.h>
 #include <glad/glad.h>
 #include <cglm/cglm.h>
+#include <soulja_client_lib/shader_helpers.h>
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"

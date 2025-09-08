@@ -16,14 +16,18 @@ add_subdirectory(thirdpartypoopers/cglm)
 add_subdirectory(thirdpartypoopers/glad)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/*.c")
+file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
 
 add_library(SouljaLib ${SRC_FILES})
+add_library(SouljaClientLib ${CLIENT_SRC_FILES})
 
 add_executable(Soulja apps/soulja_server/main.c)
 add_executable(SouljaClient apps/soulja_client/main.c)
 
 target_include_directories(SouljaLib PRIVATE internal)
+target_include_directories(SouljaClientLib PRIVATE internal)
 
+target_include_directories(SouljaClient PRIVATE internal)
 target_include_directories(Soulja PRIVATE internal)
 
 
@@ -36,4 +40,4 @@ set_target_properties(SouljaClient PROPERTIES
 )
 
 target_link_libraries(Soulja PRIVATE SouljaLib hv)
-target_link_libraries(SouljaClient PRIVATE SDL3::SDL3 OpenGL::GL cglm m glad)
+target_link_libraries(SouljaClient PRIVATE SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad)
