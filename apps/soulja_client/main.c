@@ -232,17 +232,7 @@ int main() {
 
     SDL_Event event;
     int quit = 0;
-    float x = 0.0f;
-    float z = 0.0f;
-    float hor = 0.0f;
-    float ver = 0.0f;
-    float y_rot = 0.0f;
-    float mouse_x = 0.0f;
-    float mouse_x_delta = 0.0f;
-    float mouse_y = 0.0f;
-    float mouse_y_delta = 0.0f;
     float triangle_rotation = 0.0f;
-    float camera_rotation_y = 0.0f;
 
     float relX = 0.0f;
     float relY = 0.0f;
@@ -251,12 +241,10 @@ int main() {
     MouseState mouse_state = make_mouse_state();
     while (!quit) {
 
-
         glClearColor(0.0f, 1.0f, 1.0f, 0.8f);
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
         glBindVertexArray(theVAO);
-
 
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -283,14 +271,6 @@ int main() {
 
         relX = 0.0f;
         relY = 0.0f;
-
-        vec3 camera_axis = {0.0f, 1.0f, 0.0f};
-        versor quat;
-        glm_quatv(quat, camera_rotation_y, camera_axis);
-        mat4 camera_rotation;
-        //glm_quat_mat4(quat, camera_rotation, quat);
-        
-
 
         const bool* k_state = SDL_GetKeyboardState(NULL);
 
