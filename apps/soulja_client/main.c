@@ -141,6 +141,9 @@ Camera make_camera(float x, float y, float z, float speed) {
     return camera;
 };
 
+#define INIT_SCREEN_WIDTH 1920
+#define INIT_SCREEN_HEIGHT 1080
+
 int main(int argc, char* argv[]) {
 
     load_config(argc, argv);
@@ -151,7 +154,7 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
-    SDL_Window* window = SDL_CreateWindow("Train", 800, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Train", INIT_SCREEN_WIDTH, INIT_SCREEN_WIDTH, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glcontext = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, glcontext); 
     SDL_SetWindowRelativeMouseMode(window, true);
@@ -209,7 +212,7 @@ int main(int argc, char* argv[]) {
     if(!ok){ glGetProgramInfoLog(shaderProgram, sizeof log, NULL, log); SDL_Log("LINK: %s", log); }
 
     mat4 projection_matrix;
-    glm_perspective(glm_rad(60.0f), (float) 800 / (float) 800, 0.1f, 100.0f, projection_matrix);
+    glm_perspective(glm_rad(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.1f, 100.0f, projection_matrix);
 
     glUseProgram(shaderProgram);
 
