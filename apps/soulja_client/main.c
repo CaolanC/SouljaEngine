@@ -6,23 +6,6 @@
 #include <soulja_client_lib/config.h>
 #include <FastNoiseLite.h>
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "uniform mat4 uProjection;\n"
-    "uniform mat4 uModel;\n"
-    "uniform mat4 uView;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);\n"
-    "}\0";
-
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(1.0, 0.5, 0.2, 1.0);\n"
-    "}\0";
-
 typedef struct {
     unsigned int vao, vbo;
 } Mesh;
@@ -185,12 +168,18 @@ int main(int argc, char* argv[]) {
     glEnableVertexAttribArray(0);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    get_shader_source("/shaders/triangle_shader.glsl");
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+
+    char vertex_source[2048];
+    get_shader_source("/shaders/triangle_vertex_sh.glsl", vertex_source, sizeof(vertex_source));
+    const char* shader_src = vertex_source;
+    glShaderSource(vertexShader, 1, &shader_src, NULL);
     glCompileShader(vertexShader);
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    char frag_source[2048];
+    get_shader_source("/shaders/triangle_fragment_sh.glsl", frag_source, sizeof(frag_source));
+    const char* frag_src = frag_source;
+    glShaderSource(fragmentShader, 1, &frag_src, NULL);
     glCompileShader(fragmentShader);
 
     unsigned int shaderProgram = glCreateProgram();
