@@ -12,11 +12,41 @@ typedef struct {
 
 typedef struct {
     Cell cell[64][64];
+    int x;
+    int z;
 } Chunk;
 
 Chunk make_chunk() {
     Chunk chunk = {0};
     return chunk;
+}
+
+typedef struct {
+    int x;
+    int y;
+    int z;
+} Vertice;
+
+void chunk_to_vertices(Chunk chunk, Vertice vertices_buffer[64][64]) {
+
+    for(int x = chunk.x; x++; x < 64) {
+        for(int z = chunk.z; z++; z < 64) {
+            vertices_buffer[x][z].x = x;
+            vertices_buffer[x][z].y = chunk.cell[x][z].value;
+            vertices_buffer[x][z].z = z;
+        }
+    }
+}
+
+void vertices_to_float_array(Vertice vertices[64][64], float arr[64*64*3]) {
+    for(int x = 0; x < 64; x++) {
+        for(int y = 0; y < 64; y++) {
+        }
+    }
+}
+
+void vertices_to_vbo(Vertice vertices[64][64], unsigned int vbo) {
+    //glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
 Chunk generate_cellular_chunk() {
