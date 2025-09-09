@@ -8,6 +8,8 @@ set(SDL_VIDEO_OPENGL     ON  CACHE BOOL "" FORCE)
 set(SDL_VIDEO_OPENGL_GLX ON  CACHE BOOL "" FORCE)
 set(SDL_VIDEO_OPENGL_EGL ON  CACHE BOOL "" FORCE)
 
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(thirdpartypoopers/libhv)
@@ -44,3 +46,6 @@ set_target_properties(SouljaClient PROPERTIES
 target_link_libraries(SouljaSharedLib PRIVATE fastnoiselitelib)
 target_link_libraries(Soulja PRIVATE SouljaSharedLib SouljaLib hv)
 target_link_libraries(SouljaClient PRIVATE SouljaSharedLib SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)
+
+target_compile_definitions(SouljaClient PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
+target_compile_definitions(SouljaClientLib PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")

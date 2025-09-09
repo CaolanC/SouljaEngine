@@ -46,7 +46,7 @@ brs: bserver rserver
 bsl: bshared
 
 # build fast and run client
-brcf: bclientf bclientf rclient
+brcf: bclientf bclientf rclient bsharedf
 
 # build fast and run server
 brsf: bserverf rserver bsharedf

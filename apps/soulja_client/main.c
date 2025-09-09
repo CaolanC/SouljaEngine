@@ -145,9 +145,6 @@ Camera make_camera(float x, float y, float z, float speed) {
 #define INIT_SCREEN_HEIGHT 1080
 
 int main(int argc, char* argv[]) {
-
-    load_config(argc, argv);
-
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -188,7 +185,7 @@ int main(int argc, char* argv[]) {
     glEnableVertexAttribArray(0);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    get_shader_source("./shaders/triangle_shader.glsl");
+    get_shader_source("/shaders/triangle_shader.glsl");
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
