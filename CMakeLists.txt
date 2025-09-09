@@ -28,11 +28,14 @@ add_library(SouljaSharedLib ${SHARED_SRC_FILES})
 
 add_executable(Soulja apps/soulja_server/main.c)
 add_executable(SouljaClient apps/soulja_client/main.c)
+add_executable(SouljaTestSandbox apps/soulja_test/main.c)
 
 target_include_directories(SouljaLib PRIVATE internal)
 target_include_directories(SouljaClientLib PRIVATE internal)
 target_include_directories(SouljaSharedLib PRIVATE internal)
 
+target_include_directories(SouljaTestSandbox PRIVATE internal)
+target_include_directories(SouljaClient PRIVATE internal)
 target_include_directories(SouljaClient PRIVATE internal)
 target_include_directories(Soulja PRIVATE internal)
 
@@ -43,9 +46,15 @@ set_target_properties(SouljaClient PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 
+set_target_properties(SouljaTestSandbox PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
+
 target_link_libraries(SouljaSharedLib PRIVATE fastnoiselitelib)
 target_link_libraries(Soulja PRIVATE SouljaSharedLib SouljaLib hv)
 target_link_libraries(SouljaClient PRIVATE SouljaSharedLib SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)
+target_link_libraries(SouljaTestSandbox PRIVATE SouljaSharedLib SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)
 
+target_compile_definitions(SouljaTestSandbox PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClient PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClientLib PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")

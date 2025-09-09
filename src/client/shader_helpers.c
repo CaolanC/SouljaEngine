@@ -14,5 +14,4 @@ void get_shader_source(const char* path, char* shader_buffer, size_t shader_buff
 
     size_t bytes = fread(shader_buffer, 1, shader_buffer_length - 1, stream);
     shader_buffer[bytes] = '\0';
-    printf("FUN: %s\n", shader_buffer);
 }

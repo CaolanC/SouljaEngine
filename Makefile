@@ -51,6 +51,11 @@ brcf: bclientf bclientf rclient bsharedf
 # build fast and run server
 brsf: bserverf rserver bsharedf
 
+rsb: rsandbox
+
+rsandbox:
+	./bin/SouljaTestSandbox
+
 rclient:
 	./bin/SouljaClient ${CLIENT_ARGS}
 

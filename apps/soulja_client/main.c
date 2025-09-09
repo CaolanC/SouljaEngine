@@ -40,9 +40,6 @@ void update_mouse_state(MouseState* mouse_state, float x, float y) {
     mouse_state->y_delta = y;
 }
 
-void make_view_from_camera(Camera* camera, mat4 view) {
-}
-
 void update_camera_orientation_y(Camera* camera, int uViewLoc, MouseState mouse_state, const bool* k_state) {
 
     const float sensitivity = 0.002f;
