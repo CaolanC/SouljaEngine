@@ -20,7 +20,6 @@ typedef struct {
 
 Chunk make_chunk();
 
-Chunk generate_cellular_chunk();
 
 
 #endif

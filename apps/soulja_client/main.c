@@ -112,7 +112,8 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
     int quit = 0;
     float triangle_rotation = 0.0f;
-
+    
+    glPointSize(5.0f);
     float relX = 0.0f;
     float relY = 0.0f;
     vec3 forward = {0.0f, 0.0f, -1.0f};

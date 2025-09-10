@@ -6,78 +6,28 @@ static void setup_noise() {
     noise.noise_type = FNL_NOISE_PERLIN;
 }
 
-typedef struct {
-    float value;
-} Cell;
+#define SJA_CHUNK_SIZE 64
 
-typedef struct {
-    Cell cell[64][64];
-    int x;
-    int z;
-} Chunk;
+typedef int Chunk[SJA_CHUNK_SIZE][SJA_CHUNK_SIZE][SJA_CHUNK_SIZE];
 
-Chunk make_chunk() {
-    Chunk chunk = {0};
-    return chunk;
-}
+static void fill_chunk_depth();
 
-typedef struct {
-    int x;
-    int y;
-    int z;
-} Vertice;
-
-void chunk_to_vertices(Chunk chunk, Vertice vertices_buffer[64][64]) {
-
-    for(int x = chunk.x; x++; x < 64) {
-        for(int z = chunk.z; z++; z < 64) {
-            vertices_buffer[x][z].x = x;
-            vertices_buffer[x][z].y = chunk.cell[x][z].value;
-            vertices_buffer[x][z].z = z;
-        }
-    }
-}
-
-void vertices_to_float_array(Vertice vertices[64][64], float arr[64*64*3]) {
-    for(int x = 0; x < 64; x++) {
-        for(int y = 0; y < 64; y++) {
-        }
-    }
-}
-
-void vertices_to_vbo(Vertice vertices[64][64], unsigned int vbo) {
-    //glBindBuffer(GL_ARRAY_BUFFER, vbo);
-}
-
-Chunk generate_cellular_chunk() {
-    Chunk chunk = make_chunk();
+static void generate_chunk(Chunk chunk) {
     fnl_state noise = fnlCreateState();
     noise.noise_type = FNL_NOISE_PERLIN;
-    noise.frequency = 0.8f;
+    noise.frequency = 0.5f;
     
-    for(int x = 0; x < 64; x++) {
-        for(int y = 0; y < 64; y++) {
-            float noise_value = fnlGetNoise2D(&noise, x, y);
-            chunk.cell[x][y].value = noise_value;
+    for(int x = 0; x < SJA_CHUNK_SIZE; x++) {
+        for(int z = 0; z < SJA_CHUNK_SIZE; z++) {
+            unsigned int noise_value = (unsigned int) fnlGetNoise2D(&noise, x, z) * 100;
+            printf("%d", noise_value);
+            fill_chunk_depth(chunk, x, z, floor(noise_value), 1);
         }
     }
-
-    return chunk;
 }
 
-void get_chunk_vertices(int x, int z, Vertice vertices[64][64]) {
-
-    fnl_state noise = fnlCreateState();
-    noise.noise_type = FNL_NOISE_PERLIN;
-    noise.frequency = 0.8f;
-
-    for(int _x = x; _x < 64; _x++) {
-        for(int _z = z; _z < 64; _z++) {
-            Vertice vertice;
-            vertice.x = _x;
-            vertice.z = _z;
-            vertice.y = fnlGetNoise2D(&noise, _x, _z);
-            vertices[_x][_z] = vertice;
-        }
+static void fill_chunk_depth(int chunk[SJA_CHUNK_SIZE][SJA_CHUNK_SIZE][SJA_CHUNK_SIZE], int x, int z, int to, int block) {
+    for(int y = 0; y < to; y++) {
+        chunk[x][z][y] = block;
     }
 }

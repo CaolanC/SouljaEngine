@@ -2,11 +2,12 @@
 
 #include <stdio.h>
 
+#define SJA_CHUNK_SIZE 64
+
 void print_array();
 
 int main() {
-    Chunk chunk = generate_cellular_chunk();
-    print_array(chunk);
+    int chunk[SJA_CHUNK_SIZE][SJA_CHUNK_SIZE][SJA_CHUNK_SIZE];
     return 0;
 }
 
