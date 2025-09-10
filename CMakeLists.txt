@@ -50,10 +50,13 @@ set_target_properties(SouljaTestSandbox PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 
+set(CLIENT_SHARED_LIBS cglm glad SDL3::SDL3 OpenGL::GL m glad fastnoiselitelib SouljaSharedLib)
+
 target_link_libraries(SouljaSharedLib PRIVATE fastnoiselitelib)
 target_link_libraries(Soulja PRIVATE SouljaSharedLib SouljaLib hv)
-target_link_libraries(SouljaClient PRIVATE SouljaSharedLib SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)
+target_link_libraries(SouljaClient PRIVATE ${CLIENT_SHARED_LIBS} SouljaClientLib)
 target_link_libraries(SouljaTestSandbox PRIVATE SouljaSharedLib SouljaClientLib SDL3::SDL3 OpenGL::GL cglm m glad fastnoiselitelib)
+target_link_libraries(SouljaClientLib PRIVATE ${CLIENT_SHARED_LIBS})
 
 target_compile_definitions(SouljaTestSandbox PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClient PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")

@@ -5,124 +5,15 @@
 #include <soulja_client_lib/shader_helpers.h>
 #include <soulja_client_lib/config.h>
 #include <FastNoiseLite.h>
-
-typedef struct {
-    unsigned int vao, vbo;
-} Mesh;
-
-typedef struct {
-    vec3 position;
-    Mesh* mesh;
-} GameObject;
+#include <soulja_client_lib/camera.h>
+#include <soulja_client_lib/mouse.h>
 
 
-typedef struct {
-    vec3 position;
-    versor orientation;
-    vec3 y_axis;
-    vec3 x_axis;
-    uint speed;
-    float y_rotation;
-} Camera;
-
-typedef struct {
-    float x_delta;
-    float y_delta;
-} MouseState;
-
-MouseState make_mouse_state() {
-    MouseState mouse_state = {0};
-    return mouse_state;
-}
-
-void update_mouse_state(MouseState* mouse_state, float x, float y) {
-    mouse_state->x_delta = x;
-    mouse_state->y_delta = y;
-}
-
-void update_camera_orientation_y(Camera* camera, int uViewLoc, MouseState mouse_state, const bool* k_state) {
-
-    const float sensitivity = 0.002f;
-    float yaw = -mouse_state.x_delta * sensitivity;
-    float pitch = -mouse_state.y_delta * sensitivity;
-
-    versor qYaw;
-    glm_quatv(qYaw, yaw, (vec3) {0, 1, 0});
-    versor qPitch;
-    glm_quatv(qPitch, pitch, (vec3) {1, 0, 0});
-    
-    versor tmp;
-    glm_quat_mul(qYaw, camera->orientation, tmp);
-    glm_quat_mul(tmp, qPitch, camera->orientation);
-    glm_quat_normalize(camera->orientation);
-
-    vec3 fwd   = { 0.0f, 0.0f,-1.0f };
-    vec3 right = { 1.0f, 0.0f, 0.0f };
-    vec3 up    = { 0.0f, 1.0f, 0.0f };
-
-    glm_quat_rotatev(camera->orientation, fwd, fwd);
-    glm_quat_rotatev(camera->orientation, right, right);
-    glm_quat_rotatev(camera->orientation, up, up);
-
-    float move_speed = 0.1f;
-
-    if (k_state[SDL_SCANCODE_W]) glm_vec3_muladds(fwd, move_speed, camera->position);
-    if (k_state[SDL_SCANCODE_S]) glm_vec3_muladds(fwd, -move_speed, camera->position);
-
-    if (k_state[SDL_SCANCODE_D]) glm_vec3_muladds(right, move_speed, camera->position);
-    if (k_state[SDL_SCANCODE_A]) glm_vec3_muladds(right, -move_speed, camera->position);
-
-    versor quat_conj;
-    glm_quat_conjugate(camera->orientation, quat_conj);
-
-    mat4 rotation;
-    glm_quat_mat4(quat_conj, rotation);
-
-    mat4 trans;
-    glm_translate_make(trans, (vec3){-camera->position[0], -camera->position[1], -camera->position[2]});
-    
-    mat4 new_view;
-    glm_mat4_mul(rotation, trans, new_view);
-
-    glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, (const float*) new_view);
-}
-
-void update_camera_movement(Camera* camera, bool* k_state) {
-    if (k_state[SDL_SCANCODE_W]) {
-    };
-}
-
-void update_camera_position(Camera* camera, int uViewLoc) {
-    
-}
-
-GameObject go_makeTriangle(vec3 position_xyz) {
-    GameObject triangle;
-    triangle.position[0] = position_xyz[0];
-    triangle.position[1] = position_xyz[1];
-    triangle.position[2] = position_xyz[2];
-}
-
-Camera make_camera(float x, float y, float z, float speed) {
-    Camera camera;
-    camera.position[0] = x;
-    camera.position[1] = y;
-    camera.position[2] = z;
-    camera.speed = speed;
-    glm_quat_identity(camera.orientation);
-    camera.y_rotation = 0.0f; // Has the range of 0 to 2 PI then we come back to 0;
-    camera.y_axis[0] = 0;
-    camera.y_axis[1] = 1;
-    camera.y_axis[2] = 0;
-    camera.x_axis[0] = 1;
-    camera.x_axis[1] = 0;
-    camera.x_axis[2] = 0;
-
-    return camera;
-};
 
 #define INIT_SCREEN_WIDTH 1920
 #define INIT_SCREEN_HEIGHT 1080
+
+float* make_square();
 
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO);
@@ -147,10 +38,12 @@ int main(int argc, char* argv[]) {
     
     SDL_GL_SetSwapInterval(1);
 
-    float vertices[] = {
-        -0.5f, -0.5f, -1.0f,
-         0.5f, -0.5f, -1.0f,
-        -0.5f,  0.5f, -1.0f,
+    size_t no_vertices = 0;
+    float* vertices = make_square(&no_vertices);
+    float o_vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
     };
 
     unsigned int theVAO, posVBO;
@@ -160,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     glGenBuffers(1, &posVBO);
     glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, no_vertices * sizeof(float), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
@@ -203,13 +96,13 @@ int main(int argc, char* argv[]) {
     if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection_matrix);
 
-    mat4 model_matrix;
-    glm_mat4_identity(model_matrix);
-    glm_translate(model_matrix, (vec3){0.0f, 0.0f, -18.0f});
+    //mat4 model_matrix;
+    //glm_mat4_identity(model_matrix);
+    //glm_translate(model_matrix, (vec3){0.0f, 0.0f, -18.0f});
 
     unsigned int uModelLoc = glGetUniformLocation(shaderProgram, "uModel");
     if (uModelLoc == -1) SDL_Log("WARN: uModel not found");
-    glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, (const float*) model_matrix);
+    //glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, (const float*) model_matrix);
     
     mat4 view_matrix;
 
@@ -273,7 +166,7 @@ int main(int argc, char* argv[]) {
         glm_translate(modelA, (vec3){0.0f, 0.0f, -4.0f});
         glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, (const float*) modelA);
         
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, no_vertices / 3);
 
         mat4 modelB; glm_mat4_identity(modelB);
         glm_translate(modelB, (vec3){0.0f, 0.0f, 3.0f});
@@ -297,7 +190,7 @@ int main(int argc, char* argv[]) {
 
         glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, (const float*) modelB);
         
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, no_vertices / 3);
 
         SDL_GL_SwapWindow(window);
     }
@@ -311,3 +204,19 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+float* make_square(size_t* out_floats) {
+    static const float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
+
+        -0.5f,  0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f
+    };
+    size_t bytes = sizeof(vertices);
+    float* data = (float*)malloc(bytes);
+    memcpy(data, vertices, bytes);
+    *out_floats = bytes / sizeof(float);
+    return data;
+}

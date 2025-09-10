@@ -65,3 +65,19 @@ Chunk generate_cellular_chunk() {
     return chunk;
 }
 
+void get_chunk_vertices(int x, int z, Vertice vertices[64][64]) {
+
+    fnl_state noise = fnlCreateState();
+    noise.noise_type = FNL_NOISE_PERLIN;
+    noise.frequency = 0.8f;
+
+    for(int _x = x; _x < 64; _x++) {
+        for(int _z = z; _z < 64; _z++) {
+            Vertice vertice;
+            vertice.x = _x;
+            vertice.z = _z;
+            vertice.y = fnlGetNoise2D(&noise, _x, _z);
+            vertices[_x][_z] = vertice;
+        }
+    }
+}
