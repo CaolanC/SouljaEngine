@@ -7,29 +7,22 @@
 #include <FastNoiseLite.h>
 #include <soulja_client_lib/camera.h>
 #include <soulja_client_lib/mouse.h>
+#include <soulja_client_lib/setup.h>
 
-
+float* make_square();
 
 #define INIT_SCREEN_WIDTH 1920
 #define INIT_SCREEN_HEIGHT 1080
 
-float* make_square();
-
 int main(int argc, char* argv[]) {
-    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_VIDEO);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+    SDL_Window* window;
+    int res = SJA_Setup_SDL(&window);
+    SDL_GLContext glcontext;
+    SJA_Setup_GL(window, glcontext);
+    SJA_Setup_Glad();
 
-    SDL_Window* window = SDL_CreateWindow("Train", INIT_SCREEN_WIDTH, INIT_SCREEN_WIDTH, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    SDL_GLContext glcontext = SDL_GL_CreateContext(window);
-    SDL_GL_MakeCurrent(window, glcontext); 
-    SDL_SetWindowRelativeMouseMode(window, true);
-
-    if (!gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress)) {
-        SDL_Log("Failed to initialize GLAD");
-        return -1;
+    if (res) {
+        printf("Error setting up open_gl");
     }
 
     int w, h;
