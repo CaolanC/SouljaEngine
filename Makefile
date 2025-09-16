@@ -1,6 +1,6 @@
 bootstrap:
 	git submodule update --init
-	cd build && cmake ../ && make
+	cd build && cmake -G Ninja ../ && make
 
 bootstrap_windows:
 	git submodule update --init
