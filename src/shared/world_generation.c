@@ -26,7 +26,7 @@ static void generate_chunk(Chunk chunk) {
     }
 }
 
-static void fill_chunk_depth(int chunk[SJA_CHUNK_SIZE][SJA_CHUNK_SIZE][SJA_CHUNK_SIZE], int x, int z, int to, int block) {
+static void fill_chunk_depth(Chunk chunk, int x, int z, int to, int block) {
     for(int y = 0; y < to; y++) {
         chunk[x][z][y] = block;
     }
