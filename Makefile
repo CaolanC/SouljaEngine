@@ -2,6 +2,10 @@ bootstrap:
 	git submodule update --init
 	cd build && cmake ../ && make
 
+bootstrap_windows:
+	git submodule update --init
+	cd build && cmake -G Ninja ../ && make
+
 bootstrap_ubuntu_mint: linux_mint_sdl_dep bootstrap
 
 linux_mint_sdl_dep:
