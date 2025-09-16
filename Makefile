@@ -1,3 +1,5 @@
+.PHONY: build
+
 bootstrap:
 	git submodule update --init
 	cmake -B build -S . -G Ninja ../
@@ -5,10 +7,10 @@ bootstrap:
 cmake:
 	cmake -B build -S . -G Ninja ../
 
-.PHONY: build
+c: bc rc
 
-build:
+bc:
 	ninja -C build
 
-c:
+rc:
 	./bin/Client
