@@ -10,7 +10,7 @@ typedef struct {
     versor orientation;
     vec3 y_axis;
     vec3 x_axis;
-    uint speed;
+    unsigned int speed;
     float y_rotation;
 } Camera;
 
