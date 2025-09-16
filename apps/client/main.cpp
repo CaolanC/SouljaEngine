@@ -5,26 +5,10 @@
 
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
-#include <soulja_client_lib/setup.h>
+#include <core/cameras/CameraBase.h>
 
 #define INIT_SCREEN_WIDTH 1920
 #define INIT_SCREEN_HEIGHT 1080
-
-int SJA_Setup_SDL(SDL_Window** window) {
-    *window = SDL_CreateWindow("Soulja", INIT_SCREEN_WIDTH, INIT_SCREEN_WIDTH, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-
-
-    SDL_SetWindowRelativeMouseMode(*window, true);
-
-    return 0;
-};
-
-int SJA_Setup_GL(SDL_Window* window, SDL_GLContext glcontext) {
-    glcontext = SDL_GL_CreateContext(window);
-    SDL_GL_MakeCurrent(window, glcontext); 
-
-    return 0;
-}
 
 namespace Platform {
 
@@ -33,7 +17,7 @@ class Window
 public:
     Window(const char* name, unsigned int width, unsigned int height) {
         InitSDL();
-        window = SDL_CreateWindow("Soulja", width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+        window = SDL_CreateWindow(name, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
         InitContext();
         InitGLAD();
         InitOptions();
@@ -42,6 +26,7 @@ public:
     ~Window() {
         SDL_GL_DestroyContext(glcontext);
         SDL_DestroyWindow(window);
+        SDL_Quit();
     };
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
@@ -86,34 +71,19 @@ private:
 
 }; // Platform namespace
 
-namespace Core::Cameras
-{
-    class Camera
-    {
-
-    };
-
-    class FreeCamera : Camera
-    {
-        
-    };
-}
-
 namespace Core
 {
 
 class Mesh
 {
 public:
+    Mesh() {
+        
+    }
 
 private:
     unsigned int vao{}, vbo{}, ebo{};
     std::size_t index_count{};
-};
-
-class MeshInstance
-{
-    unsigned int VAO, VBO;
 };
 
 using MeshHandle = uint32_t;
@@ -157,7 +127,7 @@ public:
             while (SDL_PollEvent(&event)) {
                 switch(event.type) {
                     case SDL_EVENT_QUIT:
-                        quit = 1;
+                        quit = true;
                         break;
                 }
             }

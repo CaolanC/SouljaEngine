@@ -64,11 +64,9 @@ target_compile_definitions(SouljaClientLib PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR
 project(ProjectSoulja CXX)
 
 add_executable(Client apps/client/main.cpp)
-
 set_target_properties(Client PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
-
-target_include_directories(Client PRIVATE internal)
-target_link_libraries(Client PRIVATE glad SDL3::SDL3 OpenGL::GL)
+target_include_directories(Client PRIVATE internal/client)
+target_link_libraries(Client PRIVATE glad SDL3::SDL3 OpenGL::GL ${CMAKE_SOURCE_DIR}/internal/client)
 target_compile_definitions(Client PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}" SLJA_WINDOW_TITLE="Soulja")
