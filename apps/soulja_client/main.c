@@ -4,6 +4,7 @@
 #include <cglm/cglm.h>
 #include <soulja_client_lib/shader_helpers.h>
 #include <soulja_client_lib/config.h>
+#include <soulja_client_lib/setup.h>
 #include <FastNoiseLite.h>
 #include <soulja_client_lib/camera.h>
 #include <soulja_client_lib/mouse.h>
