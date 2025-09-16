@@ -21,7 +21,6 @@ add_subdirectory(thirdpartypoopers/FastNoiseLite)
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/server/*.c")
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
 file(GLOB_RECURSE SHARED_SRC_FILES "${CMAKE_SOURCE_DIR}/src/shared/*.c")
-
 add_library(SouljaLib ${SRC_FILES})
 add_library(SouljaClientLib ${CLIENT_SRC_FILES})
 add_library(SouljaSharedLib ${SHARED_SRC_FILES})
@@ -61,3 +60,15 @@ target_link_libraries(SouljaClientLib PRIVATE ${CLIENT_SHARED_LIBS})
 target_compile_definitions(SouljaTestSandbox PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClient PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClientLib PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
+
+project(ProjectSoulja CXX)
+
+add_executable(Client apps/client/main.cpp)
+
+set_target_properties(Client PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
+
+target_include_directories(Client PRIVATE internal)
+target_link_libraries(Client PRIVATE glad SDL3::SDL3 OpenGL::GL)
+target_compile_definitions(Client PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}" SLJA_WINDOW_TITLE="Soulja")

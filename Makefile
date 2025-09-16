@@ -1,6 +1,6 @@
 bootstrap:
 	git submodule update --init
-	cd build && cmake ../ && make
+	cd build && cmake ../ -D CMAKE_CPP_COMPILER=/usr/bin/g++ && make
 
 bootstrap_ubuntu_mint: linux_mint_sdl_dep bootstrap
 
@@ -63,3 +63,7 @@ run:
 
 client:
 	./bin/SouljaClient ${CLIENT_ARGS}
+
+c:
+	make -C build Client
+	./bin/Client
