@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Core::Cameras
 {
     class CameraBase
