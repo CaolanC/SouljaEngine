@@ -53,14 +53,14 @@ int main(int argc, char* argv[]) {
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
     char vertex_source[2048];
-    get_shader_source("/shaders/triangle_vertex_sh.glsl", vertex_source, sizeof(vertex_source));
+    get_shader_source("shaders/triangle_vertex_sh.glsl", vertex_source, sizeof(vertex_source));
     const char* shader_src = vertex_source;
     glShaderSource(vertexShader, 1, &shader_src, NULL);
     glCompileShader(vertexShader);
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     char frag_source[2048];
-    get_shader_source("/shaders/triangle_fragment_sh.glsl", frag_source, sizeof(frag_source));
+    get_shader_source("shaders/triangle_fragment_sh.glsl", frag_source, sizeof(frag_source));
     const char* frag_src = frag_source;
     glShaderSource(fragmentShader, 1, &frag_src, NULL);
     glCompileShader(fragmentShader);

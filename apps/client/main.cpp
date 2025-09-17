@@ -16,19 +16,20 @@
 #include <core/MeshManager.hpp>
 #include <core/Renderer.hpp>
 #include <core/ShaderProgramManager.hpp>
+#include <core/sh_src.hpp>
 
-void get_shader_source(const char* path, char* shader_buffer, size_t shader_buffer_length) {
-    char tmp[512];
-    strcpy(tmp, SLJA_ASSETS_DIR);
-    strcat(tmp, path);
-    FILE* stream = fopen(tmp, "r");
-    if (stream == NULL) {
-        printf("Shader source not loaded, check path.");
-    }
+// void get_shader_source(const char* path, char* shader_buffer, size_t shader_buffer_length) {
+//     char tmp[512];
+//     strcpy(tmp, SLJA_ASSETS_DIR);
+//     strcat(tmp, path);
+//     FILE* stream = fopen(tmp, "r");
+//     if (stream == NULL) {
+//         printf("Shader source not loaded, check path.");
+//     }
 
-    size_t bytes = fread(shader_buffer, 1, shader_buffer_length - 1, stream);
-    shader_buffer[bytes] = '\0';
-}
+//     size_t bytes = fread(shader_buffer, 1, shader_buffer_length - 1, stream);
+//     shader_buffer[bytes] = '\0';
+// }
 
 
 #define INIT_SCREEN_WIDTH 1920
@@ -61,8 +62,8 @@ public:
         MeshHandle triangle_mesh = meshes.createIndexedMeshFromVertices(vertices, indices, serialiser);
         core::ShaderProgramManager programs;
         std::vector<core::ShaderSource> shader_sources = {
-            core::ShaderSource("/shaders/triangle_vertex_sh.glsl", ShaderType::Vertex),
-            core::ShaderSource("/shaders/triangle_fragment_sh.glsl", ShaderType::Fragment),
+            core::sh_src::v3D(),
+            core::sh_src::fSolid()
         };
 
         ShaderProgramHandle triangle_program = programs.from_source_vec(shader_sources);
