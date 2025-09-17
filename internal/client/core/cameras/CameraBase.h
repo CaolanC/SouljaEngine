@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Core::Cameras
+namespace core::cameras
 {
     class CameraBase
     {

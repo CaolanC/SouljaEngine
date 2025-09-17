@@ -7,10 +7,16 @@
 #include <glad/glad.h>
 #include <core/cameras/CameraBase.h>
 #include <platform/Window.hpp>
-#include <gfx/Mesh.hpp>
-#include <core/scenes/BaseScene.hpp>
+#include <core/Mesh.hpp>
+#include <core/Scene.hpp>
+#include <core/defines.hpp>
 #include <vector>
 #include <stdio.h>
+#include <map>
+#include <core/MeshManager.hpp>
+#include <core/Renderer.hpp>
+
+using namespace core::defines;
 
 void get_shader_source(const char* path, char* shader_buffer, size_t shader_buffer_length) {
     char tmp[512];
@@ -29,20 +35,6 @@ void get_shader_source(const char* path, char* shader_buffer, size_t shader_buff
 #define INIT_SCREEN_WIDTH 1920
 #define INIT_SCREEN_HEIGHT 1080
 
-using MeshHandle = uint32_t;
-
-class MeshManager
-{
-public:
-    MeshHandle createMesh() {
-        return nextID++;
-    };
-
-private:
-    MeshHandle nextID{1};
-
-};
-
 class Client
 {
 public:
@@ -51,6 +43,9 @@ public:
     }
 
     void run() {
+
+        core::Scene scene;
+        core::Renderer renderer;
 
         std::vector<float> vertices = {
             0.0f, 0.5f, 0.0f,
@@ -61,26 +56,16 @@ public:
             0, 1, 2
         };
 
-        unsigned int vbo, vao, ebo;
-        // gen and bind the vao for the mesh
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        core::MeshSerialiser serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        core::Mesh mesh(vertices, indices, serialiser);
+        core::MeshManager meshes;
+        MeshHandle triangle = meshes.createIndexedMeshFromVertices(vertices, indices, serialiser);
+        
+        core::Object triangle_object;
+        triangle_object.set_mesh(triangle);
+        scene.add_object(triangle_object);
 
-        // gen and bind vbo
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-
-        // gen and bind ebo
-        glGenBuffers(1, &ebo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-        // serialise the position data
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
-        glEnableVertexAttribArray(0);
-
-         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         // Set up shaders
         char vertex_source[2048];
         get_shader_source("/shaders/triangle_vertex_sh.glsl", vertex_source, sizeof(vertex_source));
@@ -120,12 +105,9 @@ public:
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-    glDrawElements(
-     GL_TRIANGLES,      // mode
-     indices.size(),    // count
-     GL_UNSIGNED_INT,   // type
-     (void*)0           // element array buffer offset
- );
+            
+            renderer.render(scene, meshes);
+
             while (SDL_PollEvent(&event)) {
                 switch(event.type) {
                     case SDL_EVENT_QUIT:
