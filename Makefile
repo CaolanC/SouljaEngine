@@ -8,10 +8,15 @@ setup:
 cmake:
 	cmake -B build -S . -G Ninja ../
 
-c: bc rc
+c: b rc
 
-bc:
+s: b rs
+
+b:
 	ninja -C build
 
 rc:
 	./bin/Client
+
+rs:
+	./bin/Server
