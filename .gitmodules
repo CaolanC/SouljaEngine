@@ -10,9 +10,12 @@
 [submodule "thirdpartypoopers/FastNoiseLite"]
 	path = thirdpartypoopers/FastNoiseLite
 	url = git@github.com:CaolanC/FastNoiseLite.git
-<<<<<<< HEAD
 [submodule "thirdpartypoopers/glm"]
 	path = thirdpartypoopers/glm
 	url = https://github.com/g-truc/glm.git
-=======
->>>>>>> 7668af5eee9c35fba5e7016823bfb782317d4501
+[submodule "thirdpartypoopers/entt"]
+	path = thirdpartypoopers/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "thirdpartypoopers/uWebSockets"]
+	path = thirdpartypoopers/uWebSockets
+	url = git@github.com:CaolanC/uWebSockets.git

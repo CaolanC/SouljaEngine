@@ -17,23 +17,24 @@
 #include <core/Renderer.hpp>
 #include <core/ShaderProgramManager.hpp>
 #include <core/sh_src.hpp>
+#include <entt/entt.hpp>
+#include <string>
 
-// void get_shader_source(const char* path, char* shader_buffer, size_t shader_buffer_length) {
-//     char tmp[512];
-//     strcpy(tmp, SLJA_ASSETS_DIR);
-//     strcat(tmp, path);
-//     FILE* stream = fopen(tmp, "r");
-//     if (stream == NULL) {
-//         printf("Shader source not loaded, check path.");
-//     }
+class Scene
+{
 
-//     size_t bytes = fread(shader_buffer, 1, shader_buffer_length - 1, stream);
-//     shader_buffer[bytes] = '\0';
-// }
+public:
+    Scene(const std::string _name) {
+        name = _name;
+    }
 
-
-#define INIT_SCREEN_WIDTH 1920
-#define INIT_SCREEN_HEIGHT 1080
+    void add_entity() {
+        
+    }
+private:
+    entt::registry entities;
+    std::string name;
+};
 
 class Client
 {
@@ -43,6 +44,8 @@ public:
     }
 
     void run() {
+
+        std::vector<Scene> scenes;
 
         core::Scene scene;
         core::Renderer renderer;

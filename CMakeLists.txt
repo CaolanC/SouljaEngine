@@ -18,6 +18,7 @@ add_subdirectory(thirdpartypoopers/cglm)
 add_subdirectory(thirdpartypoopers/glad)
 add_subdirectory(thirdpartypoopers/FastNoiseLite)
 add_subdirectory(thirdpartypoopers/glm)
+add_subdirectory(thirdpartypoopers/entt)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/server/*.c")
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
@@ -69,5 +70,14 @@ set_target_properties(Client PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
 )
 target_include_directories(Client PRIVATE internal/client)
-target_link_libraries(Client PRIVATE glad SDL3::SDL3 OpenGL::GL ${CMAKE_SOURCE_DIR}/internal/client)
+target_link_libraries(Client PRIVATE EnTT::EnTT glad SDL3::SDL3 OpenGL::GL ${CMAKE_SOURCE_DIR}/internal/client)
 target_compile_definitions(Client PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}" SLJA_WINDOW_TITLE="Soulja")
+
+add_executable(Server apps/server/main.cpp)
+set_target_properties(Server PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+)
+
+target_include_directories(Server PRIVATE internal/server)
+target_link_libraries(Server PRIVATE EnTT::EnTT hv)
+target_compile_definitions(Server PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
