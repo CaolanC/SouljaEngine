@@ -19,6 +19,7 @@ add_subdirectory(thirdpartypoopers/glad)
 add_subdirectory(thirdpartypoopers/FastNoiseLite)
 add_subdirectory(thirdpartypoopers/glm)
 add_subdirectory(thirdpartypoopers/entt)
+add_subdirectory(thirdpartypoopers/concurrentqueue)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/server/*.c")
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
@@ -64,6 +65,8 @@ target_compile_definitions(SouljaClient PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 target_compile_definitions(SouljaClientLib PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")
 
 project(ProjectSoulja CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(Client apps/client/main.cpp)
 set_target_properties(Client PROPERTIES
@@ -79,5 +82,5 @@ set_target_properties(Server PROPERTIES
 )
 
 target_include_directories(Server PRIVATE internal/server)
-target_link_libraries(Server PRIVATE EnTT::EnTT hv)
+target_link_libraries(Server PRIVATE concurrentqueue EnTT::EnTT hv)
 target_compile_definitions(Server PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")

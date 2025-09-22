@@ -29,7 +29,7 @@ public:
     }
 
     void add_entity() {
-        
+        const auto entity = entities.create();
     }
 private:
     entt::registry entities;
@@ -107,3 +107,4 @@ int main() {
     client.run();
     return 0;
 };
+ 

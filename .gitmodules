@@ -19,3 +19,6 @@
 [submodule "thirdpartypoopers/uWebSockets"]
 	path = thirdpartypoopers/uWebSockets
 	url = git@github.com:CaolanC/uWebSockets.git
+[submodule "thirdpartypoopers/concurrentqueue"]
+	path = thirdpartypoopers/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue.git
