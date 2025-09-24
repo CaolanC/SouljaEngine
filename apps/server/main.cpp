@@ -89,6 +89,7 @@ public:
 
     ~NetIO() {
         running = false;
+        stop();
         thr_webserver.join();
     }
 
@@ -102,12 +103,6 @@ public:
                 async_run(st);
             }
         );
-        // thr_reply_dispatch = std::jthread(
-        //     [this](std::stop_token st) {
-        //         async_reply_dispatcher();
-            
-        //     }
-        // );
 
         running = true;
     }
@@ -122,7 +117,7 @@ public:
             return;
         };
 
-        std::cout << "Handling reply for request: " << msg.req_id<<'\n';
+        std::cout << "Client ID created for request: " << msg.req_id <<'\n';
 
         it->second.set_value(JoinReplyPayload());
     }
@@ -162,7 +157,7 @@ private:
             if (fut.wait_for(3000ms) == std::future_status::ready) {
                 return response->String("Joined server.");
             }
-            return response->String("Server side error joining the server.");
+            return response->String("Server-side error joining the server.");
         });
     }
 };
