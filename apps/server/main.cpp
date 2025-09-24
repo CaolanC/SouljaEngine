@@ -11,16 +11,18 @@
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-using RequestID = uint64_t;
+using RequestID = xg::Guid;
 
 typedef enum {
-    JoinRequest
+    JoinRequest,
+    JoinReply
 } NetMsgType;
 
 struct NetMsg
 {
-    uint64_t id;
+    xg::Guid id;
     NetMsgType type;
+    xg::Guid req_id;
 };
 
 template <typename T>
@@ -36,26 +38,19 @@ public:
     
     }
 
-    unsigned int send_in(NetMsg msg) {
-        msg.id = next_id;
+    xg::Guid send_in(NetMsg msg) {
         in_q.enqueue(msg);
 
-        return next_id++;
+        return msg.id;
     }
 
     void try_get_in(NetMsgType type) {
         // in_queue.try_dequeue();
     }
 
-
-    int get_next_id() {
-        return next_id;
-    }
-
     moodycamel::ConcurrentQueue<NetMsg> out_q;
     moodycamel::ConcurrentQueue<NetMsg> in_q;
 private:
-    unsigned int next_id{1};
 
 };
 
@@ -121,6 +116,17 @@ public:
         server.stop();
     }
 
+    void handle_reply(NetMsg msg) {
+        auto it = waiting_joiners.find(msg.req_id);
+        if(it == waiting_joiners.end()) {
+            return;
+        };
+
+        std::cout << "Handling reply for request: " << msg.req_id<<'\n';
+
+        it->second.set_value(JoinReplyPayload());
+    }
+
 private:
     std::jthread thr_reply_dispatch, thr_webserver;
     hv::HttpServer server;
@@ -131,7 +137,6 @@ private:
     NetworkBus& bus;
     std::unordered_map<RequestID, std::promise<JoinReplyPayload>> waiting_joiners;
     std::mutex req_prom_mut;
-    std::atomic<int> req_id{1};
 
     void async_run(std::stop_token st) {
         server.run();
@@ -146,24 +151,19 @@ private:
 
             std::promise<JoinReplyPayload> promise;
             auto fut = promise.get_future();
-
+            auto id = xg::newGuid();
             {
                 //std::lock_guard(req_prom_mut);
-                waiting_joiners.emplace(req_id, std::move(promise));
-                req_id++;
+                waiting_joiners.emplace(id, std::move(promise));
             }
 
-            bus.send_in(NetMsg{.type=JoinRequest});
+            bus.send_in(NetMsg{.id=id, .type=JoinRequest});
 
-            if (fut.wait_for(3s) == std::future_status::ready) {
-
+            if (fut.wait_for(3000ms) == std::future_status::ready) {
+                return response->String("Joined server.");
             }
             return response->String("Server side error joining the server.");
         });
-    }
-
-    void reply_dispatcher(NetMsg msg) {
-
     }
 };
 
@@ -180,9 +180,13 @@ class NetFilter
 class Session
 {
 public:
-    Session(xg::Guid id) : id(id) {
+    Session() : id(xg::newGuid()) {
 
     };
+
+    xg::Guid get_id() {
+        return id;
+    }
 
 private:
     xg::Guid id;
@@ -202,9 +206,8 @@ public:
     }
 
     xg::Guid create() { // Returns the session ID or NULL on error
-        auto guid = xg::newGuid();
-        Session session(guid);
-        return guid;
+        Session session;
+        return session.get_id();
     }
 
 private:
@@ -261,11 +264,13 @@ private:
             while(dispatches < max_dispatches && bus.in_q.try_dequeue(msg)) {
                 switch (msg.type) {
                     case JoinRequest: {
-                        std::cout << msg.id << '\n';
+                        //std::cout << msg.id << '\n';
                         xg::Guid id = session_manager.create();
+                        NetMsg reply = {.id=xg::newGuid(), .type=JoinReply, .req_id=msg.id};
                         // if (id == NULL) {
                         //     continue;
                         // }
+                        io.handle_reply(reply);
                         break;
                     }
                 }
