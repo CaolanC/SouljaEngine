@@ -20,6 +20,7 @@ add_subdirectory(thirdpartypoopers/FastNoiseLite)
 add_subdirectory(thirdpartypoopers/glm)
 add_subdirectory(thirdpartypoopers/entt)
 add_subdirectory(thirdpartypoopers/concurrentqueue)
+add_subdirectory(thirdpartypoopers/crossguid)
 
 file(GLOB_RECURSE SRC_FILES "${CMAKE_SOURCE_DIR}/src/server/*.c")
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
@@ -82,5 +83,5 @@ set_target_properties(Server PROPERTIES
 )
 
 target_include_directories(Server PRIVATE internal/server)
-target_link_libraries(Server PRIVATE concurrentqueue EnTT::EnTT hv)
+target_link_libraries(Server PRIVATE concurrentqueue EnTT::EnTT hv crossguid)
 target_compile_definitions(Server PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}")

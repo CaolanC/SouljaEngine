@@ -22,3 +22,6 @@
 [submodule "thirdpartypoopers/concurrentqueue"]
 	path = thirdpartypoopers/concurrentqueue
 	url = https://github.com/cameron314/concurrentqueue.git
+[submodule "thirdpartypoopers/crossguid"]
+	path = thirdpartypoopers/crossguid
+	url = https://github.com/graeme-hill/crossguid.git

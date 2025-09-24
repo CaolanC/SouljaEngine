@@ -7,6 +7,7 @@
 #include <chrono>
 #include <future>
 #include <mutex>
+#include <crossguid/guid.hpp>
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
@@ -19,6 +20,7 @@ typedef enum {
 struct NetMsg
 {
     uint64_t id;
+    NetMsgType type;
 };
 
 template <typename T>
@@ -100,12 +102,17 @@ public:
         server = hv::HttpServer(&router);
         server.setPort(port);
         server.setThreadNum(4);
-        thr_webserver = std::jthread([this](std::stop_token st){async_run(st);});
-        thr_reply_dispatch = std::jthread(
-            [this](std::stop_token st) {async_reply_dispatcher();
-            
+        thr_webserver = std::jthread(
+            [this](std::stop_token st){
+                async_run(st);
             }
         );
+        // thr_reply_dispatch = std::jthread(
+        //     [this](std::stop_token st) {
+        //         async_reply_dispatcher();
+            
+        //     }
+        // );
 
         running = true;
     }
@@ -146,7 +153,7 @@ private:
                 req_id++;
             }
 
-            bus.send_in(NetMsg{});
+            bus.send_in(NetMsg{.type=JoinRequest});
 
             if (fut.wait_for(3s) == std::future_status::ready) {
 
@@ -155,7 +162,7 @@ private:
         });
     }
 
-    void async_reply_dispatcher() {
+    void reply_dispatcher(NetMsg msg) {
 
     }
 };
@@ -170,10 +177,59 @@ class NetFilter
 
 };
 
+class Session
+{
+public:
+    Session(xg::Guid id) : id(id) {
+
+    };
+
+private:
+    xg::Guid id;
+
+};
+
+class SessionManager
+{
+public:
+    SessionManager(NetworkBus& bus) : bus(bus) {
+
+    }
+
+    ~SessionManager() {
+        running = false;
+        thread.join();
+    }
+
+    xg::Guid create() { // Returns the session ID or NULL on error
+        auto guid = xg::newGuid();
+        Session session(guid);
+        return guid;
+    }
+
+private:
+
+    void start() {
+        thread = std::jthread([this]{run_async();});
+    }
+
+    void run_async() {
+        running = true;
+        while (running) {
+            std::this_thread::sleep_for(1s);
+        }
+    }
+
+    NetworkBus& bus;
+    std::unordered_map<xg::Guid, Session> session_map;
+    std::jthread thread;
+    bool running = true;
+};
+
 class Server
 {
 public:
-    Server(int port) :  port(port), io(port, bus) {
+    Server(int port) :  port(port), io(port, bus), session_manager(bus) {
 
     }
 
@@ -194,7 +250,8 @@ private:
     entt::registry registry;
     NetIO io;
     int port;
-    std::jthread thr_bus;
+    std::jthread thr_bus;   
+    SessionManager session_manager;
 
     void circulate_messages(std::stop_token st) {
         while(!st.stop_requested()) {
@@ -202,55 +259,21 @@ private:
             const int max_dispatches = 120;
             NetMsg msg;
             while(dispatches < max_dispatches && bus.in_q.try_dequeue(msg)) {
-                std::cout << msg.id << '\n';
+                switch (msg.type) {
+                    case JoinRequest: {
+                        std::cout << msg.id << '\n';
+                        xg::Guid id = session_manager.create();
+                        // if (id == NULL) {
+                        //     continue;
+                        // }
+                        break;
+                    }
+                }
                 dispatches++;
             }
             std::this_thread::sleep_for(5ms);
         }
     }
-};
-
-class Session
-{
-public:
-    Session(uint64_t id) : id(id) {
-
-    };
-
-private:
-    uint64_t id;
-
-
-};
-
-class SessionManager
-{
-
-    SessionManager(NetworkBus& bus) : bus(bus) {
-
-    }
-
-    ~SessionManager() {
-        running = false;
-        thread.join();
-    }
-private:
-
-    void start() {
-        thread = std::jthread([this]{run_async();});
-    }
-
-    void run_async() {
-        running = true;
-        while (running) {
-            std::this_thread::sleep_for(1s);
-        }
-    }
-
-    NetworkBus& bus;
-    std::vector<Session> sessions;
-    std::jthread thread;
-    bool running = true;
 };
 
 int start_game() {
