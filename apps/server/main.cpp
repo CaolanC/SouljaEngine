@@ -112,7 +112,11 @@ public:
     }
 
     void handle_reply(NetMsg msg) {
+
+        std::lock_guard<std::mutex> lock(req_prom_mut);
         auto it = waiting_joiners.find(msg.req_id);
+
+        
         if(it == waiting_joiners.end()) {
             return;
         };
@@ -148,13 +152,14 @@ private:
             auto fut = promise.get_future();
             auto id = xg::newGuid();
             {
-                //std::lock_guard(req_prom_mut);
+                std::lock_guard<std::mutex> lock(req_prom_mut);
                 waiting_joiners.emplace(id, std::move(promise));
             }
 
             bus.send_in(NetMsg{.id=id, .type=JoinRequest});
 
             if (fut.wait_for(3000ms) == std::future_status::ready) {
+                request->headers["Connection"] = "keep-alive";
                 return response->String("Joined server.");
             }
             return response->String("Server-side error joining the server.");

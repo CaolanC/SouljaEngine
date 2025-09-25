@@ -6,17 +6,17 @@ setup:
 	git submodule update --init --recursive
 
 cmake:
-	cmake -B build -S . -G Ninja ../
+	cmake -B build -S . -G "Unix Makefiles" ../
 
 c: bc rc
 
 s: bs rs
 
 bc:
-	ninja -C build Client
+	make -C build Client
 
 bs:
-	ninja -C build Server
+	make -C build Server
 
 rc:
 	./bin/Client
