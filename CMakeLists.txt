@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.28.3)
-
-# One project call; enable both C and C++
 project(Soulja LANGUAGES C CXX)
 
-# --- SDL & OpenGL switches ---
+# SDL & OpenGL switches ---
 set(SDL_VIDEO            ON  CACHE BOOL "" FORCE)
 set(SDL_VIDEO_X11        ON  CACHE BOOL "" FORCE)
 set(SDL_VIDEO_WAYLAND    ON  CACHE BOOL "" FORCE)
@@ -14,7 +12,6 @@ set(SDL_VIDEO_OPENGL_EGL ON  CACHE BOOL "" FORCE)
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets/")
 find_package(OpenGL REQUIRED)
 
-# --- Third-party ---
 add_subdirectory(thirdpartypoopers/libhv)
 add_subdirectory(thirdpartypoopers/libsdl-org)
 add_subdirectory(thirdpartypoopers/cglm)
@@ -25,7 +22,6 @@ add_subdirectory(thirdpartypoopers/entt)
 add_subdirectory(thirdpartypoopers/concurrentqueue)
 add_subdirectory(thirdpartypoopers/crossguid)
 
-# --- C (legacy) ---
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
 file(GLOB_RECURSE SHARED_SRC_FILES "${CMAKE_SOURCE_DIR}/src/shared/*.c")
 
