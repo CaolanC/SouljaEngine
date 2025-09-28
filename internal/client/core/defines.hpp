@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <crossguid/guid.hpp>
 
 #ifndef INIT_SCREEN_WIDTH
 #define INIT_SCREEN_WIDTH 1920
@@ -13,8 +14,8 @@
 #define SLJA_ASSETS_DIR NULL
 #endif
 
-using MeshHandle = unsigned int;
-using ShaderProgramHandle = unsigned int;
+using MeshHandle = xg::Guid;
+using ShaderProgramHandle = xg::Guid;
 
 enum ShaderType {
     Vertex  = GL_VERTEX_SHADER,

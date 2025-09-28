@@ -11,13 +11,16 @@ class MeshManager
 public:
     MeshHandle createIndexedMeshFromVertices(std::vector<float> vertices, std::vector<unsigned int> indices, core::MeshSerialiser serialiser) {
         core::Mesh mesh(vertices, indices, serialiser);
-        auto id = nextID++;
+        auto id = xg::newGuid();
         mesh_map.insert({id, mesh});
         return id;
     };
 
-    void add_mesh(core::Mesh mesh) {
-        mesh_map.insert({nextID++, mesh});
+    xg::Guid add_mesh(core::Mesh mesh) {
+        auto g = xg::newGuid();
+        mesh_map.insert({g, mesh});
+
+        return g;
     }
 
     core::Mesh get_mesh(MeshHandle id) {
@@ -25,7 +28,6 @@ public:
     }
 
 private:
-    MeshHandle nextID{1};
     std::map<MeshHandle, core::Mesh> mesh_map;
 
 };

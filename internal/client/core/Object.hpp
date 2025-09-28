@@ -5,6 +5,20 @@
 
 namespace core
 {
+
+    class RunScript {
+        public:
+        RunScript(std::function<int()> script) {
+
+        }
+
+        int run() {
+            return script();
+        };
+        private:
+        std::function<int()> script;
+    };
+
     class Object
     {
 public:
@@ -13,6 +27,7 @@ public:
         }
 
         void set_mesh(MeshHandle handle) {
+            set_renderable();
             mesh_handle = handle;
         }
 
@@ -28,9 +43,33 @@ public:
             return mesh_handle;
         }
 
+        void run_frame_scripts() {
+            for (auto script : scripts) {
+                script.run();
+            }
+        }
+
+        void set_renderable() {
+            renderable = true;
+        }
+
+        void unset_renderable() {
+            renderable = false;
+        }
+
+        bool is_renderable() {
+            return renderable;
+        }
+
+        void push_script(std::function<int()> script) {
+            scripts.push_back(script);
+        }
+
 private:
     MeshHandle mesh_handle;
     ShaderProgramHandle program_handle;
+    std::vector<RunScript> scripts;
+    bool renderable = false;
 
     };
 };

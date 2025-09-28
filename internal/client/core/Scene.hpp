@@ -2,6 +2,7 @@
 
 #include <core/Object.hpp>
 #include <core/cameras/CameraBase.h>
+#include <vector>
 
 namespace core
 {

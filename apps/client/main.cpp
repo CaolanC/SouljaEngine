@@ -14,11 +14,13 @@
 #include <stdio.h>
 #include <map>
 #include <core/MeshManager.hpp>
-#include <core/Renderer.hpp>
+#include <core/scenes/Renderer.hpp>
 #include <core/ShaderProgramManager.hpp>
 #include <core/sh_src.hpp>
 #include <entt/entt.hpp>
 #include <string>
+#include <hv/requests.h>
+#include <hv/HttpClient.h>
 
 class Scene
 {
@@ -36,6 +38,24 @@ private:
     std::string name;
 };
 
+void request_join() {
+    hv::HttpClient cli;
+    HttpRequest req;
+    req.method = HTTP_GET;
+    req.url = "http://127.0.0.1:30000/join";
+    req.headers["Connection"] = "keep-alive";
+    req.body = "This is a sync request.";
+    req.timeout = 10;
+    HttpResponse resp;
+    int ret = cli.send(&req, &resp);
+    if (ret != 0) {
+        printf("request failed!\n");
+    } else {
+        printf("%d %s\r\n", resp.status_code, resp.status_message());
+        printf("%s %s\n", resp.body.c_str(), resp.headers["Connection"].c_str());
+    }    
+};
+
 class Client
 {
 public:
@@ -51,9 +71,9 @@ public:
         core::Renderer renderer;
 
         std::vector<float> vertices = {
-            0.0f, 0.5f, 0.0f,
-           -0.5f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f
+            0.0f, 0.5f, -0.0f,
+           -0.5f, 0.0f, -3.0f,
+            0.0f, 0.0f, -3.0f
         };
         std::vector<unsigned int> indices = {
             0, 1, 2
@@ -76,6 +96,9 @@ public:
         triangle_object.set_mesh(triangle_mesh);
         scene.add_object(triangle_object);
 
+        core::cameras::FreeCamera free_cam;
+        scene.add_object(free_cam);
+
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
 
@@ -85,7 +108,7 @@ public:
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            
+
             renderer.render(scene, meshes, programs);
 
             while (SDL_PollEvent(&event)) {
@@ -103,6 +126,7 @@ private:
 };
 
 int main() {
+    request_join();
     Client client;
     client.run();
     return 0;

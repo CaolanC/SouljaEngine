@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <core/defines.hpp>
+#include <crossguid/guid.hpp>
 
 namespace core
 {
@@ -97,7 +98,7 @@ namespace core
             SDL_Log("Link error: %s", log);
         }
 
-        auto id = nextID++;
+        auto id = xg::newGuid();
         program_map.insert({id, program});
         return id;
     };
@@ -107,7 +108,6 @@ namespace core
     }
 
     private:
-    ShaderProgramHandle nextID{1};
     std::map<ShaderProgramHandle, unsigned int> program_map;
 };
 
