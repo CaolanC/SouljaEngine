@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp> 
 #include <vector>
+#include <thread>
 
 
 namespace core
@@ -16,24 +17,33 @@ namespace core
     class Renderer
     {
     public:
-        void render(core::Scene scene, core::MeshManager meshes, core::ShaderProgramManager programs) {
+
+        Renderer(core::MeshManager meshes, core::ShaderProgramManager programs) : meshes(meshes), programs(programs) {
+
+        }
+
+        void render(core::Scene scene) {
             const std::vector<core::Object> objects = scene.get_objects();
             MeshHandle curr_handle;
-
-            for(auto obj : objects) {
+    
+            for(core::Object obj : objects) {
                 if (obj.is_renderable()) {
-                    render_object(obj, meshes, programs);
+                    std::jthread([this, obj](core::Object* o){
+                        render_object(o);
+                    }, &obj);
                 }
+                    std::jthread([this](core::Object o) {
+                     o.run_frame_scripts(); // Scripts that run every frame
+                }, obj);
 
-                obj.run_frame_scripts(); // Scripts that run every frame
             }
         
         };
     
 
-        void render_object(core::Object obj, core::MeshManager meshes, core::ShaderProgramManager programs) {
-            core::Mesh mesh = meshes.get_mesh(obj.get_mesh_handle());
-            unsigned int program = programs.get_program(obj.get_program_handle());
+        void render_object(core::Object* obj) {
+            core::Mesh mesh = meshes.get_mesh(obj->get_mesh_handle());
+            unsigned int program = programs.get_program(obj->get_program_handle());
                 
             mesh.bind_vao();
 
@@ -46,19 +56,21 @@ namespace core
             );
         }
 
-    glm::mat4 camera() {
-        glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.0f, 100.0f);
+    // glm::mat4 camera() {
+    //     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.0f, 100.0f);
 
-        // glUseProgram(shaderProgram);
+    //     // glUseProgram(shaderProgram);
 
-        // unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
-        // if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
-        //     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection);
-            
-        };
+    //     // unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
+    //     // if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
+    //     //     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection);
+
+    //     };
 
         private:
             glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.0f, 100.0f);
             unsigned int shaderProgram;
+            core::ShaderProgramManager programs;
+            core::MeshManager meshes;
     };
 }

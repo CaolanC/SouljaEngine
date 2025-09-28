@@ -68,7 +68,6 @@ public:
         std::vector<Scene> scenes;
 
         core::Scene scene;
-        core::Renderer renderer;
 
         std::vector<float> vertices = {
             0.0f, 0.5f, -0.0f,
@@ -104,12 +103,13 @@ public:
 
         bool quit = false;
         SDL_Event event;
+        core::Renderer renderer = core::Renderer(meshes, programs);
         while (!quit) {
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            renderer.render(scene, meshes, programs);
+            renderer.render(scene);
 
             while (SDL_PollEvent(&event)) {
                 switch(event.type) {

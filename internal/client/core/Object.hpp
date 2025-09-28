@@ -8,12 +8,20 @@ namespace core
 
     class RunScript {
         public:
-        RunScript(std::function<int()> script) {
+        RunScript(std::function<int()> script) : script(script) {
 
         }
 
         int run() {
-            return script();
+            int ret;
+            try
+            {
+                ret = script();
+                return ret;                
+            }
+            catch (const std::bad_function_call& e) {
+                std::cout << e.what() << '\n';
+            }
         };
         private:
         std::function<int()> script;
@@ -22,7 +30,7 @@ namespace core
     class Object
     {
 public:
-        Object() {
+        Object() : renderable(false) {
             
         }
 
@@ -61,7 +69,7 @@ public:
             return renderable;
         }
 
-        void push_script(std::function<int()> script) {
+        void push_script(RunScript script) {
             scripts.push_back(script);
         }
 
@@ -69,7 +77,7 @@ private:
     MeshHandle mesh_handle;
     ShaderProgramHandle program_handle;
     std::vector<RunScript> scripts;
-    bool renderable = false;
+    bool renderable;
 
     };
 };

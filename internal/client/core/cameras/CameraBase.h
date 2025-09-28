@@ -16,9 +16,10 @@ namespace core::cameras
     {
         public:
         FreeCamera() : CameraBase() {
-            // push_script([this]() {
-            //     return 0;
-            // });
+            RunScript script = RunScript([this](){
+                return 0;
+            });
+            push_script(script);
         };
     };
 }
