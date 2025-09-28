@@ -80,6 +80,10 @@ public:
             frame_scripts.push_back(script);
         }
 
+        void push_init_script(RunScript script) {
+            init_scripts.push_back(script);
+        }
+
 private:
     MeshHandle mesh_handle;
     ShaderProgramHandle program_handle;

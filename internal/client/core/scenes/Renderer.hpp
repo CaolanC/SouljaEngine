@@ -24,8 +24,7 @@ namespace core
 
         void render(core::Scene scene) {
             const std::vector<core::Object> objects = scene.get_objects();
-            MeshHandle curr_handle;
-    
+
             for(core::Object obj : objects) {
                 if (obj.is_renderable()) {
                     render_object(std::ref(obj));
@@ -46,12 +45,20 @@ namespace core
             mesh.bind_vao();
 
             glUseProgram(program);
+            set_projection_mat(program);
             glDrawElements(
                 GL_TRIANGLES,      // mode
                 mesh.get_index_count(),    // count
                 GL_UNSIGNED_INT,   // type
                 (void*)0           // element array buffer offset
             );
+        }
+
+        void set_projection_mat(unsigned int program) {
+           unsigned int projection_loc = glGetUniformLocation(program, "uProjection");
+            if (projection_loc == -1) SDL_Log("WARN: uProjection not found"); {
+                glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+            };
         }
 
     // glm::mat4 camera() {

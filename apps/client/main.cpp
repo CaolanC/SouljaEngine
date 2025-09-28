@@ -70,9 +70,9 @@ public:
         core::Scene scene;
 
         std::vector<float> vertices = {
-            0.0f, 0.5f, 0.0f,
-           -0.5f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f
+            0.0f, 0.5f, -10.0f,
+           -0.5f, 0.0f, -10.0f,
+            0.0f, 0.0f, -10.0f
         };
         std::vector<unsigned int> indices = {
             0, 1, 2
