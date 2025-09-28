@@ -22,22 +22,6 @@
 #include <hv/requests.h>
 #include <hv/HttpClient.h>
 
-class Scene
-{
-
-public:
-    Scene(const std::string _name) {
-        name = _name;
-    }
-
-    void add_entity() {
-        const auto entity = entities.create();
-    }
-private:
-    entt::registry entities;
-    std::string name;
-};
-
 void request_join() {
     hv::HttpClient cli;
     HttpRequest req;
@@ -60,14 +44,14 @@ class Client
 {
 public:
 
-    Client() {
-    }
+    Client() = default;
 
     void run() {
 
-        std::vector<Scene> scenes;
+        std::vector<core::Scene> scenes;
 
-        core::Scene scene;
+        auto cam = core::cameras::FreeCamera();
+        auto scene = core::Scene(std::ref(cam));
 
         std::vector<float> vertices = {
             0.0f, 0.5f, -10.0f,
@@ -98,19 +82,21 @@ public:
         // core::cameras::FreeCamera free_cam;
         // scene.add_object(free_cam);
 
+        //auto entity = scene.create_entity();
+
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
 
         bool quit = false;
         SDL_Event event;
-        core::Renderer renderer = core::Renderer(meshes, programs);
+        auto renderer = core::Renderer(meshes, programs);
         run_init_scripts(std::ref(scene));
         while (!quit) {
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            renderer.render(scene);
+            renderer.render(std::ref(scene));
 
             while (SDL_PollEvent(&event)) {
                 switch(event.type) {

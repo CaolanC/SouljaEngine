@@ -68,6 +68,8 @@ target_link_libraries(ServerLib
 )
 
 add_executable(Client apps/client/main.cpp)
+add_dependencies(Client SouljaClientLib)
+
 set_target_properties(Client PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 target_include_directories(Client PRIVATE ${CMAKE_SOURCE_DIR}/internal/client)
 target_link_libraries(Client PRIVATE EnTT::EnTT glad SDL3::SDL3 OpenGL::GL hv glm::glm crossguid)

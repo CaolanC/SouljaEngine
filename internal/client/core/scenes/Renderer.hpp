@@ -22,12 +22,12 @@ namespace core
 
         }
 
-        void render(core::Scene scene) {
+        void render(core::Scene& scene) {
             const std::vector<core::Object> objects = scene.get_objects();
 
             for(core::Object obj : objects) {
                 if (obj.is_renderable()) {
-                    render_object(std::ref(obj));
+                    render_object(std::ref(obj), scene);
                 }
                 std::jthread([this](core::Object &o) {
                      o.run_frame_scripts(); // Scripts that run every frame
@@ -38,7 +38,7 @@ namespace core
         };
     
 
-        void render_object(core::Object &obj) {
+        void render_object(core::Object &obj, core::Scene& scene) {
             core::Mesh mesh = meshes.get_mesh(obj.get_mesh_handle());
             unsigned int program = programs.get_program(obj.get_program_handle());
                 
@@ -46,6 +46,7 @@ namespace core
 
             glUseProgram(program);
             set_projection_mat(program);
+            set_view_mat(scene.get_view_matrix(), program);
             glDrawElements(
                 GL_TRIANGLES,      // mode
                 mesh.get_index_count(),    // count
@@ -61,20 +62,15 @@ namespace core
             };
         }
 
-    // glm::mat4 camera() {
-    //     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.0f, 100.0f);
-
-    //     // glUseProgram(shaderProgram);
-
-    //     // unsigned int uProjectionLoc = glGetUniformLocation(shaderProgram, "uProjection");
-    //     // if (uProjectionLoc == -1) SDL_Log("WARN: uProjection not found");
-    //     //     glUniformMatrix4fv(uProjectionLoc, 1, GL_FALSE, (const float*) projection);
-
-    //     };
+        void set_view_mat(const glm::mat4& view_mat, unsigned int program) {
+            unsigned int view_loc = glGetUniformLocation(program, "uView");
+            if (view_loc == -1) SDL_Log("WARN: uView not found"); {
+                glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view_mat));
+            };
+        }
 
         private:
             glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) INIT_SCREEN_WIDTH / (float) INIT_SCREEN_HEIGHT, 0.0f, 100.0f);
-            unsigned int shaderProgram;
             core::ShaderProgramManager programs;
             core::MeshManager meshes;
     };

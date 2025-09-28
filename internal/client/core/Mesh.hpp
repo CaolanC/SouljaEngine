@@ -54,7 +54,7 @@ public:
         return index_count;
     }
 
-    void bind_vao() {
+    void bind_vao() const {
         glBindVertexArray(vao);
     }
 private:
