@@ -70,9 +70,9 @@ public:
         core::Scene scene;
 
         std::vector<float> vertices = {
-            0.0f, 0.5f, -0.0f,
-           -0.5f, 0.0f, -3.0f,
-            0.0f, 0.0f, -3.0f
+            0.0f, 0.5f, 0.0f,
+           -0.5f, 0.0f, 0.0f,
+            0.0f, 0.0f, 0.0f
         };
         std::vector<unsigned int> indices = {
             0, 1, 2
@@ -81,7 +81,7 @@ public:
         core::MeshSerialiser serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         core::Mesh mesh(vertices, indices, serialiser);
         core::MeshManager meshes;
-        MeshHandle triangle_mesh = meshes.createIndexedMeshFromVertices(vertices, indices, serialiser);
+        xg::Guid triangle_mesh = meshes.createIndexedMeshFromVertices(vertices, indices, serialiser);
         core::ShaderProgramManager programs;
         std::vector<core::ShaderSource> shader_sources = {
             core::sh_src::v3D(),
@@ -95,8 +95,8 @@ public:
         triangle_object.set_mesh(triangle_mesh);
         scene.add_object(triangle_object);
 
-        core::cameras::FreeCamera free_cam;
-        scene.add_object(free_cam);
+        // core::cameras::FreeCamera free_cam;
+        // scene.add_object(free_cam);
 
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
@@ -104,6 +104,7 @@ public:
         bool quit = false;
         SDL_Event event;
         core::Renderer renderer = core::Renderer(meshes, programs);
+        run_init_scripts(std::ref(scene));
         while (!quit) {
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
@@ -123,6 +124,12 @@ public:
     }
 private:
     Platform::Window window = Platform::Window(SLJA_WINDOW_TITLE, 1920, 1080);
+
+    void run_init_scripts(core::Scene& scene) {
+        for(auto obj : scene.get_objects()) {
+            obj.run_init_scripts();
+        }
+    }
 };
 
 int main() {

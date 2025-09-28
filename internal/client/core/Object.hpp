@@ -21,6 +21,7 @@ namespace core
             }
             catch (const std::bad_function_call& e) {
                 std::cout << e.what() << '\n';
+                return -1;
             }
         };
         private:
@@ -30,8 +31,8 @@ namespace core
     class Object
     {
 public:
-        Object() : renderable(false) {
-            
+        Object() {
+            renderable = false;
         }
 
         void set_mesh(MeshHandle handle) {
@@ -51,8 +52,14 @@ public:
             return mesh_handle;
         }
 
-        void run_frame_scripts() {
-            for (auto script : scripts) {
+        void run_frame_scripts() { // TODO: Lock guard scripts so they can't be appended and read from at the same time
+            for (auto script : frame_scripts) {
+                script.run();
+            }
+        }
+
+        void run_init_scripts() { // TODO: Lock guard scripts so they can't be appended and read from at the same time
+            for (auto script : init_scripts) {
                 script.run();
             }
         }
@@ -69,14 +76,15 @@ public:
             return renderable;
         }
 
-        void push_script(RunScript script) {
-            scripts.push_back(script);
+        void push_frame_script(RunScript script) {
+            frame_scripts.push_back(script);
         }
 
 private:
     MeshHandle mesh_handle;
     ShaderProgramHandle program_handle;
-    std::vector<RunScript> scripts;
+    std::vector<RunScript> frame_scripts;
+    std::vector<RunScript> init_scripts;
     bool renderable;
 
     };

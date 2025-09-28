@@ -19,7 +19,7 @@ namespace core::cameras
             RunScript script = RunScript([this](){
                 return 0;
             });
-            push_script(script);
+            push_frame_script(script);
         };
     };
 }

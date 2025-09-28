@@ -28,22 +28,20 @@ namespace core
     
             for(core::Object obj : objects) {
                 if (obj.is_renderable()) {
-                    std::jthread([this, obj](core::Object* o){
-                        render_object(o);
-                    }, &obj);
+                    render_object(std::ref(obj));
                 }
-                    std::jthread([this](core::Object o) {
+                std::jthread([this](core::Object &o) {
                      o.run_frame_scripts(); // Scripts that run every frame
-                }, obj);
+                }, std::ref(obj));
 
             }
         
         };
     
 
-        void render_object(core::Object* obj) {
-            core::Mesh mesh = meshes.get_mesh(obj->get_mesh_handle());
-            unsigned int program = programs.get_program(obj->get_program_handle());
+        void render_object(core::Object &obj) {
+            core::Mesh mesh = meshes.get_mesh(obj.get_mesh_handle());
+            unsigned int program = programs.get_program(obj.get_program_handle());
                 
             mesh.bind_vao();
 

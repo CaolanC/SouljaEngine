@@ -3,13 +3,14 @@
 #include <core/Mesh.hpp>
 #include <core/defines.hpp>
 #include <map>
+#include <crossguid/guid.hpp>
 
 namespace core {
 
 class MeshManager
 {
 public:
-    MeshHandle createIndexedMeshFromVertices(std::vector<float> vertices, std::vector<unsigned int> indices, core::MeshSerialiser serialiser) {
+    xg::Guid createIndexedMeshFromVertices(std::vector<float> vertices, std::vector<unsigned int> indices, core::MeshSerialiser serialiser) {
         core::Mesh mesh(vertices, indices, serialiser);
         auto id = xg::newGuid();
         mesh_map.insert({id, mesh});
@@ -28,7 +29,7 @@ public:
     }
 
 private:
-    std::map<MeshHandle, core::Mesh> mesh_map;
+    std::map<xg::Guid, core::Mesh> mesh_map;
 
 };
 
