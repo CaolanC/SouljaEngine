@@ -52,20 +52,17 @@ public:
 
     void run() {
 
-        std::vector<core::Scene> scenes;
-
         auto cam = core::cameras::FreeCamera();
-        auto scene = core::Scene(std::ref(cam));
+        auto scene = core::Scene();
 
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
 
         bool quit = false;
         SDL_Event event;
-        run_init_scripts(std::ref(scene));
+        // run_init_scripts(std::ref(scene));
         while (!quit) {
-            scene.set_camera_position(glm::vec3(0, 0, -9));
-            scene.update_entities();
+            scene.set_camera_position(glm::vec3(0, 0, 1));
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             const bool* k_state = SDL_GetKeyboardState(NULL); // TODO: Singleton component for game input
@@ -79,15 +76,16 @@ public:
             }
             window.swap();
         };
+        std::vector<core::Scene> scenes;
     }
 private:
     Platform::Window window = Platform::Window(SLJA_WINDOW_TITLE, 1920, 1080);
 
-    void run_init_scripts(core::Scene& scene) {
-        for(auto obj : scene.get_objects()) {
-            obj.run_init_scripts();
-        }
-    }
+    // void run_init_scripts(core::Scene& scene) {
+    //     for(auto obj : scene.get_objects()) {
+    //         obj.run_init_scripts();
+    //     }
+    // }
 };
 
 int main() {
