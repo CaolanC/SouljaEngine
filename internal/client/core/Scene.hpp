@@ -12,6 +12,13 @@
 #include "EntityManager.hpp"
 #include "component/Core.hpp"
 #include "spawn/Spawn.hpp"
+#include "systems/Render.hpp"
+#include <core/MeshManager.hpp>
+#include <core/sh_src.hpp>
+
+#include <core/ShaderProgramManager.hpp>
+
+#include "systems/Transform.hpp"
 
 namespace core
 {
@@ -21,8 +28,43 @@ class Scene
 public:
 
     explicit Scene(core::cameras::IViewMatrix& iView) : camera(iView), view_matrix(camera.get_view_matrix()), entities(entt::registry()), e_manager(EntityManager()) {
+        spawn_default_camera();
+        spawn_triangle();
         cam = e_manager.spawn(spawn::freecam);
         //cam = spawn::freecam(entities);
+    }
+
+    void spawn_default_camera() {
+        current_camera = spawn(spawn::freecam);
+    }
+
+    void spawn_triangle() {
+
+        std::vector<float> vertices = {
+            0.0f, 0.5f, -10.0f,
+           -0.5f, 0.0f, -10.0f,
+            0.0f, 0.0f, -10.0f
+        };
+        std::vector<unsigned int> indices = {
+            0, 1, 2
+        };
+
+        core::MeshSerialiser mesh_serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        core::Mesh mesh(vertices, indices, mesh_serialiser);
+        xg::Guid triangle_mesh_ref = mesh_manager.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
+
+        std::vector<core::ShaderSource> shader_sources = {
+            core::sh_src::v3D(),
+            core::sh_src::fSolid()
+        };
+        ShaderProgramHandle triangle_program_ref = programs.from_source_vec(shader_sources);
+
+        spawn::triangle(std::ref(registry), triangle_mesh_ref, triangle_program_ref);
+
+    }
+
+    entt::entity spawn(std::function<entt::entity(entt::registry& registry)>const& spawn_function) {
+        return spawn_function(std::ref(registry));
     }
 
     void add_object(core::Object object) {
@@ -51,11 +93,17 @@ public:
     }
 
     void set_camera_position(glm::vec3 position) {
-        e_manager.set_entity(cam, position);
+        auto &pos = registry.get<component::position>(current_camera);
+        pos = position;
     }
 
     entt::registry& get_registry() {
         return std::ref(entities);
+    }
+
+    void update() { // Call this once per frame
+        systems::Transform(std::ref(registry));
+        systems::Render(std::ref(registry), std::ref(mesh_manager), std::ref(programs), std::ref(current_camera));
     }
 
 private:
@@ -67,6 +115,10 @@ private:
     entt::entity camera_attachment;
     entt::entity cam;
     core::EntityManager e_manager;
+    entt::registry registry;
+    core::MeshManager mesh_manager;
+    entt::entity current_camera;
+    core::ShaderProgramManager programs;
 };
 
 }

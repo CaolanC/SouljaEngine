@@ -24,6 +24,8 @@
 #include <core/EntityManager.hpp>
 #include <spawn/Spawn.hpp>
 
+#include "systems/Render.hpp"
+
 void request_join() {
     hv::HttpClient cli;
     HttpRequest req;
@@ -55,57 +57,19 @@ public:
         auto cam = core::cameras::FreeCamera();
         auto scene = core::Scene(std::ref(cam));
 
-        std::vector<float> vertices = {
-            0.0f, 0.5f, -10.0f,
-           -0.5f, 0.0f, -10.0f,
-            0.0f, 0.0f, -10.0f
-        };
-        std::vector<unsigned int> indices = {
-            0, 1, 2
-        };
-
-        core::MeshSerialiser serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        core::Mesh mesh(vertices, indices, serialiser);
-        core::MeshManager meshes;
-        xg::Guid triangle_mesh = meshes.createIndexedMeshFromVertices(vertices, indices, serialiser);
-        core::ShaderProgramManager programs;
-        std::vector<core::ShaderSource> shader_sources = {
-            core::sh_src::v3D(),
-            core::sh_src::fSolid()
-        };
-
-        ShaderProgramHandle triangle_program = programs.from_source_vec(shader_sources);
-        core::Object triangle_object;
-
-        triangle_object.set_program(triangle_program);
-        triangle_object.set_mesh(triangle_mesh);
-        scene.add_object(triangle_object);
-
-        //spawn::freecam(scene.get_registry());
-
-        // core::EntityUpdater updater;
-        // updater.spawn(spawn::freecam2);
-        // core::cameras::FreeCamera free_cam;
-        // scene.add_object(free_cam);
-
-        //auto entity = scene.create_entity();
-
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
 
         bool quit = false;
         SDL_Event event;
-        auto renderer = core::Renderer(meshes, programs);
         run_init_scripts(std::ref(scene));
-
         while (!quit) {
             scene.set_camera_position(glm::vec3(0, 0, -9));
             scene.update_entities();
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-
-            renderer.render(std::ref(scene));
-
+            const bool* k_state = SDL_GetKeyboardState(NULL); // TODO: Singleton component for game input
+            scene.update();
             while (SDL_PollEvent(&event)) {
                 switch(event.type) {
                     case SDL_EVENT_QUIT:
