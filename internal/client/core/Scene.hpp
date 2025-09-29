@@ -9,6 +9,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <entt/entt.hpp>
 
+#include "component/Core.hpp"
+#include "spawn/Spawn.hpp"
+
 namespace core
 {
 
@@ -16,8 +19,8 @@ class Scene
 {
 public:
 
-    explicit Scene(core::cameras::IViewMatrix& iView) : camera(iView), view_matrix(camera.get_view_matrix()) {
-
+    explicit Scene(core::cameras::IViewMatrix& iView) : entities(entt::registry()), camera(iView), view_matrix(camera.get_view_matrix()) {
+        cam = spawn::freecam(entities);
     }
 
     void add_object(core::Object object) {
@@ -37,6 +40,17 @@ public:
         return camera.get_view_matrix();
     }
 
+    void update_entt() {
+
+    }
+
+    glm::mat4& get_camera_transform() {
+        return std::ref(entities.get<component::transform>(cam));
+    }
+
+    entt::registry& get_registry() {
+        return std::ref(entities);
+    }
 
 private:
 
@@ -44,6 +58,8 @@ private:
     core::cameras::IViewMatrix& camera;
     glm::mat4 view_matrix;
     entt::registry entities;
+    entt::entity camera_attachment;
+    entt::entity cam;
 };
 
 }

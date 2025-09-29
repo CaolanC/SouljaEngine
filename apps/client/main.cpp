@@ -21,6 +21,8 @@
 #include <string>
 #include <hv/requests.h>
 #include <hv/HttpClient.h>
+#include <core/EntityUpdater.hpp>
+#include <spawn/Spawn.hpp>
 
 void request_join() {
     hv::HttpClient cli;
@@ -79,6 +81,8 @@ public:
         triangle_object.set_mesh(triangle_mesh);
         scene.add_object(triangle_object);
 
+        spawn::freecam(scene.get_registry());
+
         // core::cameras::FreeCamera free_cam;
         // scene.add_object(free_cam);
 
@@ -91,6 +95,7 @@ public:
         SDL_Event event;
         auto renderer = core::Renderer(meshes, programs);
         run_init_scripts(std::ref(scene));
+
         while (!quit) {
 
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);

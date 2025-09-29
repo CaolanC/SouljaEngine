@@ -41,12 +41,11 @@ namespace core
         void render_object(core::Object &obj, core::Scene& scene) {
             core::Mesh mesh = meshes.get_mesh(obj.get_mesh_handle());
             unsigned int program = programs.get_program(obj.get_program_handle());
-                
+            set_view_mat(glm::inverse(scene.get_camera_transform()), program);
             mesh.bind_vao();
 
             glUseProgram(program);
             set_projection_mat(program);
-            set_view_mat(scene.get_view_matrix(), program);
             glDrawElements(
                 GL_TRIANGLES,      // mode
                 mesh.get_index_count(),    // count
