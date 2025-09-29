@@ -21,7 +21,7 @@
 #include <string>
 #include <hv/requests.h>
 #include <hv/HttpClient.h>
-#include <core/EntityUpdater.hpp>
+#include <core/EntityManager.hpp>
 #include <spawn/Spawn.hpp>
 
 void request_join() {
@@ -81,8 +81,10 @@ public:
         triangle_object.set_mesh(triangle_mesh);
         scene.add_object(triangle_object);
 
-        spawn::freecam(scene.get_registry());
+        //spawn::freecam(scene.get_registry());
 
+        // core::EntityUpdater updater;
+        // updater.spawn(spawn::freecam2);
         // core::cameras::FreeCamera free_cam;
         // scene.add_object(free_cam);
 
@@ -97,7 +99,8 @@ public:
         run_init_scripts(std::ref(scene));
 
         while (!quit) {
-
+            scene.set_camera_position(glm::vec3(0, 0, -9));
+            scene.update_entities();
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 

@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <entt/entt.hpp>
 
+#include "EntityManager.hpp"
 #include "component/Core.hpp"
 #include "spawn/Spawn.hpp"
 
@@ -19,8 +20,9 @@ class Scene
 {
 public:
 
-    explicit Scene(core::cameras::IViewMatrix& iView) : entities(entt::registry()), camera(iView), view_matrix(camera.get_view_matrix()) {
-        cam = spawn::freecam(entities);
+    explicit Scene(core::cameras::IViewMatrix& iView) : camera(iView), view_matrix(camera.get_view_matrix()), entities(entt::registry()), e_manager(EntityManager()) {
+        cam = e_manager.spawn(spawn::freecam);
+        //cam = spawn::freecam(entities);
     }
 
     void add_object(core::Object object) {
@@ -40,12 +42,16 @@ public:
         return camera.get_view_matrix();
     }
 
-    void update_entt() {
-
+    void update_entities() {
+        e_manager.update();
     }
 
-    glm::mat4& get_camera_transform() {
-        return std::ref(entities.get<component::transform>(cam));
+    glm::mat4 get_camera_transform() {
+        return e_manager.get_entity_transform(cam);
+    }
+
+    void set_camera_position(glm::vec3 position) {
+        e_manager.set_entity(cam, position);
     }
 
     entt::registry& get_registry() {
@@ -60,6 +66,7 @@ private:
     entt::registry entities;
     entt::entity camera_attachment;
     entt::entity cam;
+    core::EntityManager e_manager;
 };
 
 }
