@@ -61,8 +61,8 @@ public:
         bool quit = false;
         SDL_Event event;
         // run_init_scripts(std::ref(scene));
+        scene.set_camera_position(glm::vec3(0, 0, 1));
         while (!quit) {
-            scene.set_camera_position(glm::vec3(0, 0, 1));
             glClearColor(0.0f, 1.0f, 1.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
             const bool* k_state = SDL_GetKeyboardState(NULL); // TODO: Singleton component for game input

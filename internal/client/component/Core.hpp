@@ -24,4 +24,20 @@ namespace component
     struct camera_attachment {
 
     };
+
+    struct game_input {
+
+    };
+
+    struct keyboard_state {
+        const bool* k_state;
+        int no_keys;
+    };
+
+    struct mouse_state {
+        float dx, dy;
+    };
+
+    struct player_controllable {};
+
 }

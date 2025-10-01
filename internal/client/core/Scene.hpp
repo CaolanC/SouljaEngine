@@ -18,6 +18,8 @@
 
 #include <core/ShaderProgramManager.hpp>
 
+#include "systems/GatherPlayerInput.hpp"
+#include "systems/PlayerControllable.hpp"
 #include "systems/Transform.hpp"
 
 namespace core
@@ -28,9 +30,17 @@ class Scene
 public:
 
      Scene() : current_camera(spawn_default_camera()) {
+         bootstrap();
         spawn_default_camera();
         spawn_triangle();
     }
+
+    void bootstrap() {
+         int no_keys;
+         const bool* k_state = SDL_GetKeyboardState(&no_keys);
+         registry.ctx().emplace<component::keyboard_state>(k_state, no_keys);
+         registry.ctx().emplace<component::mouse_state>(0.0f, 0.0f);
+     }
 
     entt::entity spawn_default_camera() {
         return spawn(spawn::freecam);
@@ -74,9 +84,12 @@ public:
     //     return std::ref(entities);
     // }
 
-    void update() { // Call this once per frame
-        systems::Transform(std::ref(registry));
-        systems::Render(std::ref(registry), std::ref(mesh_manager), std::ref(programs), std::ref(current_camera));
+    void update() {
+         auto r = std::ref(registry);
+         systems::GatherPlayerInput(r);
+         systems::PlayerControl(r);
+         systems::Transform(r);
+         systems::Render(r, std::ref(mesh_manager), std::ref(programs), std::ref(current_camera));
     }
 
 private:

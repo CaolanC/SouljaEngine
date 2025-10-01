@@ -46,6 +46,6 @@ int start_game() {
     return 0;
 }
 
-int main() {
+int main() { // TODO: Add the ability to hurt other developers, like throw a rock at them or something and kill them. toggle dev_friendly_fire
     return start_game();
 }
