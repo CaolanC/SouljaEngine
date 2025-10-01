@@ -43,6 +43,7 @@ private:
 
     void InitOptions() {
         SDL_GL_SetSwapInterval(1);
+        SDL_SetWindowRelativeMouseMode(window, true);
     }
 
     void InitSDL() {

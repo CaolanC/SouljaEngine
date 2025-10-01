@@ -8,17 +8,26 @@ namespace systems {
         const auto& kb = r.ctx().get<component::keyboard_state>();
         const auto& ms = r.ctx().get<component::mouse_state>();
 
-        auto view = r.view<component::player_controllable, component::position>();
+        auto view = r.view<component::player_controllable, component::position, component::rotation>();
 
-        for (auto [e, pos]: view.each()) {
-            if (kb.k_state[SDL_SCANCODE_W]) {
-                pos += glm::vec3(0, 0, -0.5);
-            }
-            if (kb.k_state[SDL_SCANCODE_S]) {
-                pos += glm::vec3(0, 0, 0.5);
-            }
+        const float sens = 0.05f;
+        const float yaw   = glm::radians(sens * -ms.dx);
+        const float pitch = glm::radians(sens * -ms.dy);
+
+        for (auto [e, pos, rot] : view.each()) {
+            rot = glm::normalize(glm::angleAxis(yaw, glm::vec3(0,1,0)) * rot);
+
+            const glm::vec3 right = glm::normalize(rot * glm::vec3(1,0,0));
+            rot = glm::normalize(glm::angleAxis(pitch, right) * rot);
+
+            const float speed = 0.15f;
+            const glm::vec3 fwd = glm::normalize(rot * glm::vec3(0,0,-1));
+            const glm::vec3 strafe = glm::normalize(rot * glm::vec3(1,0,0));
+
+            if (kb.k_state[SDL_SCANCODE_W]) pos += fwd * speed;
+            if (kb.k_state[SDL_SCANCODE_S]) pos -= fwd * speed;
+            if (kb.k_state[SDL_SCANCODE_A]) pos -= strafe * speed;
+            if (kb.k_state[SDL_SCANCODE_D]) pos += strafe * speed;
         }
-
-        std::cout << ms.dx << " " << ms.dy << std::endl;
     }
 }
