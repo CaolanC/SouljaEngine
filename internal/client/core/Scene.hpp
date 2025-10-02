@@ -46,6 +46,11 @@ public:
         return spawn(spawn::freecam);
     }
 
+    void spawn_mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+         core::MeshSerialiser mesh_serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+         // core::Mesh
+     }
+
     void spawn_triangle() {
 
         std::vector<float> vertices = {
