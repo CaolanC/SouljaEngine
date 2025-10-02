@@ -4,6 +4,7 @@
 #include "glm/fwd.hpp"
 #include "glm/detail/type_quat.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include <core/MeshManager.hpp>
 
 namespace component
 {
@@ -39,5 +40,9 @@ namespace component
     };
 
     struct user_control {};
+
+    struct mesh_manager {
+        core::MeshManager manager;
+    };
 
 }

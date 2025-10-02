@@ -18,9 +18,11 @@
 
 #include <core/ShaderProgramManager.hpp>
 
-#include "systems/GatherUserInput.hpp"
+#include <systems/GatherUserInput.hpp>
 #include <systems/UserControl.hpp>
-#include "systems/Transform.hpp"
+#include <systems/Transform.hpp>
+#include <tuple>
+#include <generator/GridPlane.hpp>
 
 namespace core
 {
@@ -33,6 +35,7 @@ public:
          bootstrap();
         spawn_default_camera();
         spawn_triangle();
+         // spawn_from_generator(generator::GridPlane);
     }
 
     void bootstrap() {
@@ -40,15 +43,31 @@ public:
          const bool* k_state = SDL_GetKeyboardState(&no_keys);
          registry.ctx().emplace<component::keyboard_state>(k_state, no_keys);
          registry.ctx().emplace<component::mouse_state>(0.0f, 0.0f);
+
+         registry.ctx().emplace<component::mesh_manager>(core::MeshManager());
+
      }
 
     entt::entity spawn_default_camera() {
         return spawn(spawn::freecam);
     }
 
-    void spawn_mesh(std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+    void spawn_from_generator(std::function<std::tuple<std::vector<float>, std::vector<unsigned int>>()>const& generator) {
+
+         auto [vertices, indices] = generator(); // 2Tuple
          core::MeshSerialiser mesh_serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-         // core::Mesh
+         core::Mesh mesh(vertices, indices, mesh_serialiser);
+
+         core::MeshManager& mesh_manager = registry.ctx().get<component::mesh_manager>().manager;
+         xg::Guid triangle_mesh_ref = mesh_manager.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
+
+         std::vector<core::ShaderSource> shader_sources = {
+             core::sh_src::v3D(),
+             core::sh_src::fSolid()
+         };
+         ShaderProgramHandle triangle_program_ref = programs.from_source_vec(shader_sources);
+
+         spawn::raw(std::ref(registry), triangle_mesh_ref, triangle_program_ref);
      }
 
     void spawn_triangle() {
@@ -64,7 +83,8 @@ public:
 
         core::MeshSerialiser mesh_serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         core::Mesh mesh(vertices, indices, mesh_serialiser);
-        xg::Guid triangle_mesh_ref = mesh_manager.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
+         core::MeshManager& mm = registry.ctx().get<component::mesh_manager>().manager;
+        xg::Guid triangle_mesh_ref = mm.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
 
         std::vector<core::ShaderSource> shader_sources = {
             core::sh_src::v3D(),
@@ -95,12 +115,14 @@ public:
          systems::GatherUserInput(r);
          systems::UserControl(r);
          systems::Transform(r);
-         systems::Render(r, std::ref(mesh_manager), std::ref(programs), std::ref(current_camera));
+         systems::Render(
+             r,
+             std::ref(programs),
+             std::ref(current_camera));
     }
 
 private:
     entt::registry registry;
-    core::MeshManager mesh_manager;
     entt::entity current_camera;
     core::ShaderProgramManager programs;
 };
