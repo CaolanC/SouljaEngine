@@ -24,7 +24,7 @@ namespace spawn {
         r.emplace<component::position>(e, glm::vec3(0, 0, 0));
         r.emplace<component::rotation>(e, glm::angleAxis(0.0f, glm::vec3(0, 1, 0)));
         r.emplace<component::transform>(e, glm::mat4(1.0f));
-        r.emplace<component::player_controllable>(e);
+        r.emplace<component::user_control>(e);
         return e;
     }
 

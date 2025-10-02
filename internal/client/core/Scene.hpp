@@ -18,8 +18,8 @@
 
 #include <core/ShaderProgramManager.hpp>
 
-#include "systems/GatherPlayerInput.hpp"
-#include "systems/PlayerControllable.hpp"
+#include "systems/GatherUserInput.hpp"
+#include <systems/UserControl.hpp>
 #include "systems/Transform.hpp"
 
 namespace core
@@ -85,9 +85,10 @@ public:
     // }
 
     void update() {
+
          auto r = std::ref(registry);
-         systems::GatherPlayerInput(r);
-         systems::PlayerControl(r);
+         systems::GatherUserInput(r);
+         systems::UserControl(r);
          systems::Transform(r);
          systems::Render(r, std::ref(mesh_manager), std::ref(programs), std::ref(current_camera));
     }

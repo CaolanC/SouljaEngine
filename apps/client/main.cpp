@@ -52,7 +52,6 @@ public:
 
     void run() {
 
-        auto cam = core::cameras::FreeCamera();
         auto scene = core::Scene();
 
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;

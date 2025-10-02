@@ -38,6 +38,6 @@ namespace component
         float dx, dy;
     };
 
-    struct player_controllable {};
+    struct user_control {};
 
 }

@@ -4,11 +4,11 @@
 #include <iostream>
 
 namespace systems {
-    void PlayerControl(entt::registry& r) {
+    void UserControl(entt::registry& r) {
         const auto& kb = r.ctx().get<component::keyboard_state>();
         const auto& ms = r.ctx().get<component::mouse_state>();
 
-        auto view = r.view<component::player_controllable, component::position, component::rotation>();
+        auto view = r.view<component::user_control, component::position, component::rotation>();
 
         const float sens = 0.05f;
         const float yaw   = glm::radians(sens * -ms.dx);
@@ -24,6 +24,7 @@ namespace systems {
             const glm::vec3 fwd = glm::normalize(rot * glm::vec3(0,0,-1));
             const glm::vec3 strafe = glm::normalize(rot * glm::vec3(1,0,0));
 
+            // TODO: Normalize these values and set up an input actions maps,
             if (kb.k_state[SDL_SCANCODE_W]) pos += fwd * speed;
             if (kb.k_state[SDL_SCANCODE_S]) pos -= fwd * speed;
             if (kb.k_state[SDL_SCANCODE_A]) pos -= strafe * speed;
