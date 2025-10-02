@@ -5,6 +5,7 @@
 #include "glm/detail/type_quat.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include <core/MeshManager.hpp>
+#include <core/ShaderProgramManager.hpp>
 
 namespace component
 {
@@ -43,6 +44,14 @@ namespace component
 
     struct mesh_manager {
         core::MeshManager manager;
+    };
+
+    struct material_manager {
+        core::ShaderProgramManager manager;
+    };
+
+    struct current_camera {
+        entt::entity e;
     };
 
 }

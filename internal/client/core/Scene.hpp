@@ -31,7 +31,7 @@ class Scene
 {
 public:
 
-     Scene() : current_camera(spawn_default_camera()) {
+     Scene() {
          bootstrap();
         spawn_default_camera();
         spawn_triangle();
@@ -43,8 +43,9 @@ public:
          const bool* k_state = SDL_GetKeyboardState(&no_keys);
          registry.ctx().emplace<component::keyboard_state>(k_state, no_keys);
          registry.ctx().emplace<component::mouse_state>(0.0f, 0.0f);
-
+         registry.ctx().emplace<component::current_camera>(spawn_default_camera());
          registry.ctx().emplace<component::mesh_manager>(core::MeshManager());
+         registry.ctx().emplace<component::material_manager>(core::ShaderProgramManager());
 
      }
 
@@ -65,7 +66,7 @@ public:
              core::sh_src::v3D(),
              core::sh_src::fSolid()
          };
-         ShaderProgramHandle triangle_program_ref = programs.from_source_vec(shader_sources);
+         ShaderProgramHandle triangle_program_ref = registry.ctx().get<component::material_manager>().manager.from_source_vec(shader_sources);
 
          spawn::raw(std::ref(registry), triangle_mesh_ref, triangle_program_ref);
      }
@@ -90,7 +91,7 @@ public:
             core::sh_src::v3D(),
             core::sh_src::fSolid()
         };
-        ShaderProgramHandle triangle_program_ref = programs.from_source_vec(shader_sources);
+        ShaderProgramHandle triangle_program_ref = registry.ctx().get<component::material_manager>().manager.from_source_vec(shader_sources);
 
         spawn::triangle(std::ref(registry), triangle_mesh_ref, triangle_program_ref);
 
@@ -101,7 +102,7 @@ public:
     }
 
     void set_camera_position(glm::vec3 position) {
-        auto &pos = registry.get<component::position>(current_camera);
+        auto &pos = registry.get<component::position>(registry.ctx().get<component::current_camera>().e);
         pos = position;
     }
 
@@ -115,16 +116,11 @@ public:
          systems::GatherUserInput(r);
          systems::UserControl(r);
          systems::Transform(r);
-         systems::Render(
-             r,
-             std::ref(programs),
-             std::ref(current_camera));
+         systems::Render(r);
     }
 
 private:
     entt::registry registry;
-    entt::entity current_camera;
-    core::ShaderProgramManager programs;
 };
 
 }
