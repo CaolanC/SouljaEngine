@@ -2,6 +2,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "SDL3/SDL_log.h"
+#include <string>
 
 namespace systems::Utils {
     class RenderUtils {
@@ -19,5 +20,11 @@ namespace systems::Utils {
                 glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(proj_matrix));
             };
         };
+
+        static std::string asset(std::string const& path) {
+            auto s = SLJA_ASSETS_DIR + path;
+            std::cout << s << '\n';
+            return s;
+        }
     };
 }

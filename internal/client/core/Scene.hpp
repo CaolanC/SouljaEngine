@@ -24,6 +24,8 @@
 #include <tuple>
 #include <generator/GridPlane.hpp>
 
+#include "systems/Init.hpp"
+
 namespace core
 {
 
@@ -47,6 +49,7 @@ public:
          registry.ctx().emplace<component::mesh_manager>(core::MeshManager());
          registry.ctx().emplace<component::material_manager>(core::ShaderProgramManager());
 
+         systems::Init(std::ref(registry));
      }
 
     entt::entity spawn_default_camera() {

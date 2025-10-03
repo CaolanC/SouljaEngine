@@ -21,6 +21,7 @@ add_subdirectory(thirdpartypoopers/glm)
 add_subdirectory(thirdpartypoopers/entt)
 add_subdirectory(thirdpartypoopers/concurrentqueue)
 add_subdirectory(thirdpartypoopers/crossguid)
+add_subdirectory(thirdpartypoopers/tinygltf)
 
 file(GLOB_RECURSE CLIENT_SRC_FILES "${CMAKE_SOURCE_DIR}/src/client/*.c")
 file(GLOB_RECURSE SHARED_SRC_FILES "${CMAKE_SOURCE_DIR}/src/shared/*.c")
@@ -67,12 +68,15 @@ target_link_libraries(ServerLib
   PRIVATE concurrentqueue hv crossguid
 )
 
-add_executable(Client apps/client/main.cpp)
+add_executable(Client apps/client/main.cpp
+        internal/client/component/AdminCommand.hpp
+        internal/client/systems/MeshLoading.hpp
+        internal/client/systems/Init.hpp)
 add_dependencies(Client SouljaClientLib)
 
 set_target_properties(Client PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 target_include_directories(Client PRIVATE ${CMAKE_SOURCE_DIR}/internal/client)
-target_link_libraries(Client PRIVATE EnTT::EnTT glad SDL3::SDL3 OpenGL::GL hv glm::glm crossguid)
+target_link_libraries(Client PRIVATE EnTT::EnTT glad SDL3::SDL3 OpenGL::GL hv glm::glm crossguid tinygltf)
 target_compile_definitions(Client PRIVATE SLJA_ASSETS_DIR="${ASSETS_DIR}" SLJA_WINDOW_TITLE="Soulja")
 
 add_executable(Server apps/server/main.cpp)

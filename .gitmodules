@@ -25,3 +25,6 @@
 [submodule "thirdpartypoopers/crossguid"]
 	path = thirdpartypoopers/crossguid
 	url = https://github.com/graeme-hill/crossguid.git
+[submodule "thirdpartypoopers/tinygltf"]
+	path = thirdpartypoopers/tinygltf
+	url = https://github.com/syoyo/tinygltf.git

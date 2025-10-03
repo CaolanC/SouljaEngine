@@ -48,12 +48,10 @@ class Client
 {
 public:
 
-    Client() = default;
+    Client() {
+    }
 
     void run() {
-
-        auto scene = core::Scene();
-
         int w = INIT_SCREEN_WIDTH, h = INIT_SCREEN_HEIGHT;
         glViewport(0, 0, w, h);
 
@@ -75,16 +73,10 @@ public:
             }
             window.swap();
         };
-        std::vector<core::Scene> scenes;
     }
 private:
     Platform::Window window = Platform::Window(SLJA_WINDOW_TITLE, 1920, 1080);
-
-    // void run_init_scripts(core::Scene& scene) {
-    //     for(auto obj : scene.get_objects()) {
-    //         obj.run_init_scripts();
-    //     }
-    // }
+    core::Scene scene = core::Scene();
 };
 
 int main() {
