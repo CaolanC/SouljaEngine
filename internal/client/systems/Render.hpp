@@ -44,7 +44,8 @@ void NewRender(entt::registry& reg) {
         static_cast<float>(INIT_SCREEN_WIDTH) / static_cast<float>(INIT_SCREEN_HEIGHT),
         0.1f, 100.0f // (near=0.1 avoids bad depth precision)
     );
-    glm::mat4 view_matrix = glm::inverse(reg.get<component::transform>(reg.ctx().get<component::current_camera>().e));
+        auto& curr_cam = reg.ctx().get<component::current_camera>();
+    glm::mat4 view_matrix = glm::inverse(reg.get<component::transform>(curr_cam.e));
 
     auto view = reg.view<component::model_ref, component::mat_ref>();
 
@@ -74,7 +75,7 @@ void NewRender(entt::registry& reg) {
                 bindProgramAndSetGlobals(programToUse);
 
                 glBindVertexArray(prim.vao);
-
+                unsigned int view_loc = glGetUniformLocation(program, "uDistance");
                 if (prim.indexCount > 0) {
                     glDrawElements(prim.mode, prim.indexCount, prim.indexType, nullptr);
                 } else {
