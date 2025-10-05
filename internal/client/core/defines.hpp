@@ -16,6 +16,7 @@
 
 using MeshHandle = xg::Guid;
 using ShaderProgramHandle = xg::Guid;
+using ModelHandle = xg::Guid;
 
 enum ShaderType {
     Vertex  = GL_VERTEX_SHADER,

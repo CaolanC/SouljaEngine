@@ -25,6 +25,7 @@
 #include <generator/GridPlane.hpp>
 
 #include "systems/Init.hpp"
+#include <core/ModelManager.hpp>
 
 namespace core
 {
@@ -33,10 +34,10 @@ class Scene
 {
 public:
 
-     Scene() {
+     Scene(core::MeshManager const& manager, core::ModelManager const& model_manager) : mesh_manager(manager), model_manager(model_manager) {
          bootstrap();
-        spawn_default_camera();
-        spawn_triangle();
+        // spawn_default_camera();
+        // spawn_triangle();
          // spawn_from_generator(generator::GridPlane);
     }
 
@@ -46,10 +47,11 @@ public:
          registry.ctx().emplace<component::keyboard_state>(k_state, no_keys);
          registry.ctx().emplace<component::mouse_state>(0.0f, 0.0f);
          registry.ctx().emplace<component::current_camera>(spawn_default_camera());
-         registry.ctx().emplace<component::mesh_manager>(core::MeshManager());
+         registry.ctx().emplace<component::mesh_manager>(mesh_manager);
          registry.ctx().emplace<component::material_manager>(core::ShaderProgramManager());
+         registry.ctx().emplace<component::model_manager>(model_manager);
 
-         systems::Init(std::ref(registry));
+         systems::Init(registry);
      }
 
     entt::entity spawn_default_camera() {
@@ -62,8 +64,8 @@ public:
          core::MeshSerialiser mesh_serialiser(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
          core::Mesh mesh(vertices, indices, mesh_serialiser);
 
-         core::MeshManager& mesh_manager = registry.ctx().get<component::mesh_manager>().manager;
-         xg::Guid triangle_mesh_ref = mesh_manager.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
+         core::MeshManager& m_manager = registry.ctx().get<component::mesh_manager>().manager;
+         xg::Guid triangle_mesh_ref = m_manager.createIndexedMeshFromVertices(vertices, indices, mesh_serialiser);
 
          std::vector<core::ShaderSource> shader_sources = {
              core::sh_src::v3D(),
@@ -119,11 +121,13 @@ public:
          systems::GatherUserInput(r);
          systems::UserControl(r);
          systems::Transform(r);
-         systems::Render(r);
+         systems::NewRender(r);
     }
 
 private:
     entt::registry registry;
+    core::MeshManager const& mesh_manager;
+    core::ModelManager const& model_manager;
 };
 
 }

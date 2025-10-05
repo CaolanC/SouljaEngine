@@ -6,6 +6,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include <core/MeshManager.hpp>
 #include <core/ShaderProgramManager.hpp>
+#include <core/ModelManager.hpp>
 
 namespace component
 {
@@ -54,4 +55,15 @@ namespace component
         entt::entity e;
     };
 
+    struct models_to_load {
+        std::vector<std::string> paths;
+    };
+
+    struct model_manager {
+        core::ModelManager manager;
+    };
+
+    struct model_ref {
+        xg::Guid id;
+    };
 }

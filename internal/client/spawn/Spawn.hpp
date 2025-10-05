@@ -38,6 +38,16 @@ namespace spawn {
         return e;
     }
 
+    static entt::entity model(entt::registry& r, xg::Guid model_ref, xg::Guid program_ref) {
+        const auto e = r.create();
+        r.emplace<component::model_ref>(e, model_ref);
+        r.emplace<component::mat_ref>(e, program_ref);
+        r.emplace<component::position>(e, glm::vec3(0, 0, 0));
+        r.emplace<component::rotation>(e, glm::quat());
+        r.emplace<component::transform>(e, glm::mat4(1.0f));
+        return e;
+    }
+
     static entt::entity raw(entt::registry& r, xg::Guid mesh_reference, xg::Guid material_reference) {
         const auto e = r.create();
         r.emplace<component::mesh_ref>(e, mesh_reference);

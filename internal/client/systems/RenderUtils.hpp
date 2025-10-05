@@ -3,6 +3,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "SDL3/SDL_log.h"
 #include <string>
+#include <iostream>
 
 namespace systems::Utils {
     class RenderUtils {

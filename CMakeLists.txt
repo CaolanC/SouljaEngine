@@ -71,7 +71,9 @@ target_link_libraries(ServerLib
 add_executable(Client apps/client/main.cpp
         internal/client/component/AdminCommand.hpp
         internal/client/systems/MeshLoading.hpp
-        internal/client/systems/Init.hpp)
+        internal/client/systems/Init.hpp
+        internal/client/utils/Model.hpp
+        internal/client/core/ModelManager.hpp)
 add_dependencies(Client SouljaClientLib)
 
 set_target_properties(Client PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")

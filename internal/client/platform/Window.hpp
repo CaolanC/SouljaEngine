@@ -43,7 +43,7 @@ private:
 
     void InitOptions() {
         SDL_GL_SetSwapInterval(1);
-        SDL_SetWindowRelativeMouseMode(window, true);
+        SDL_SetWindowRelativeMouseMode(window, true); // This causes the cursor to disappear on debug mode, and it doesn't look like there's an easy way to solve this problem.
     }
 
     void InitSDL() {

@@ -25,6 +25,7 @@
 #include <spawn/Spawn.hpp>
 
 #include "systems/Render.hpp"
+#include <core/ModelManager.hpp>
 
 void request_join() {
     hv::HttpClient cli;
@@ -76,7 +77,9 @@ public:
     }
 private:
     Platform::Window window = Platform::Window(SLJA_WINDOW_TITLE, 1920, 1080);
-    core::Scene scene = core::Scene();
+    core::MeshManager mesh_manager = core::MeshManager();
+    core::ModelManager model_manager = core::ModelManager();
+    core::Scene scene = core::Scene(mesh_manager, model_manager);
 };
 
 int main() {
